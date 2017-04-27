@@ -41,8 +41,14 @@
         return (y % 2 === 0 ? x * this.width : x * this.width + this.width / 2) + (x - 1) + 'px'
       },
       move (x, y) {
-        this.x = x
-        this.y = y
+        this.x.old = this.x.current
+        this.y.old = this.y.current
+        this.x.current = x
+        this.y.current = y
+        this.x.minus = this.x.current - this.x.old
+        this.y.minus = this.y.current - this.y.old
+        console.info(this.x)
+        console.info(this.y)
       }
     },
     computed: {
@@ -51,9 +57,9 @@
       },
       center () {
         return {
-          top: (this.row + 2 - this.y * 1.5) * this.lengthen + 'px',
+          top: (this.row + 2 - this.y.minus * 1.5) * this.lengthen + 'px',
 //            this.y % 2 === 0 ? (this.row - this.y) * this.lengthen : (this.row - this.y) * this.lengthen - this.lengthen / 2 + 'px',
-          left: (this.col - 2 - this.x * 2) * this.width + 'px'
+          left: (this.col - 2 - this.x.minus * 2) * this.width + 'px'
 //            this.x % 2 === 0 ? (this.col - this.x) * this.width - 2 * this.width : (this.col - this.x) * this.width - 2.5 * this.width + 'px'
 //          width: (this.width + 1) * this.col + this.width / 2 + 'px',
 //          height: (this.width - 2) * this.row + 'px'
@@ -74,8 +80,16 @@
         lengthen: 20,
         row: 4,
         col: 6,
-        x: 1,
-        y: 1
+        x: {
+          old: 0,
+          current: 0,
+          minus: 0
+        },
+        y: {
+          old: 0,
+          current: 0,
+          minus: 0
+        }
       }
     }
   }
