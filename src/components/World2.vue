@@ -19,10 +19,12 @@
     },
     methods: {
       move (e) {
-        let canvas = document.getElementById('canvas')
-        console.info('x:' + Math.floor(e.offsetX / (canvas.width >> 1)) + ',y:' + Math.floor(e.offsetY / (canvas.height >> 1)))
+        let canvas = this.getCanvas()
+        this.current.x = Math.round((e.offsetX - (canvas.width >> 1)) / (this.width << 1))
+        this.current.y = Math.round((e.offsetY - (canvas.height >> 1)) / (this.lengthen << 1))
+        console.info(this.current)
       },
-      drawHexagon (canvas, ctx, x, y) {
+      drawHexagon (canvas, ctx, x, y, text) {
         let lx = (canvas.width >> 1) + x * (this.width << 1) + (y % 2 === 0 ? 0 : this.width)
         let ly = (canvas.height >> 1) + y * ((this.lengthen << 1) - (this.lengthen >> 1))
         let halfHeight = this.lengthen
@@ -36,7 +38,7 @@
         ctx.lineTo(lx, ly + halfHeight)
         ctx.lineTo(lx - halfWidth, ly + quarterHeight)
         ctx.lineTo(lx - halfWidth, ly - quarterHeight)
-        if (x === 0 && y === 0) {
+        if (this.current.x === x && this.current.y === y) {
           ctx.fillStyle = 'wheat'
           ctx.fill()
         } else {
@@ -46,11 +48,14 @@
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillStyle = 'black'
-        ctx.fillText(x + ',' + y, lx, ly)
+        ctx.fillText(text, lx, ly)
+      },
+      getCanvas () {
+        return document.getElementById('canvas')
       }
     },
     mounted () {
-      let canvas = document.getElementById('canvas')
+      let canvas = this.getCanvas()
       canvas.width = window.innerWidth
       canvas.height = canvas.parentNode.clientHeight
       let ctx = canvas.getContext('2d')
@@ -59,16 +64,17 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         for (let y = -3; y < 4; y++) {
           for (let x = -3; x < 4; x++) {
-            this.drawHexagon(canvas, ctx, x, y)
+            this.drawHexagon(canvas, ctx, x, y, x + ',' + y)
           }
         }
         window.requestAnimationFrame(fn)
       }
-      window.requestAnimationFrame(fn)
+      fn()
     },
     data () {
       return {
-        lengthen: 40
+        lengthen: 50,
+        current: {x: 0, y: 0}
       }
     }
   }
