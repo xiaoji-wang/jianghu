@@ -19,7 +19,8 @@
     },
     methods: {
       move (e) {
-        console.info('x:' + Math.floor((e.offsetX - this.width) / this.width) + ',y:' + Math.floor(e.offsetY / this.lengthen))
+        let canvas = document.getElementById('canvas')
+        console.info('x:' + Math.floor(e.offsetX / (canvas.width >> 1)) + ',y:' + Math.floor(e.offsetY / (canvas.height >> 1)))
       },
       drawHexagon (canvas, ctx, x, y) {
         let lx = (canvas.width >> 1) + x * (this.width << 1) + (y % 2 === 0 ? 0 : this.width)
@@ -56,8 +57,8 @@
       ctx.strokeStyle = 'wheat'
       let fn = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
-        for (let y = -4; y < 4; y++) {
-          for (let x = -4; x < 4; x++) {
+        for (let y = -3; y < 4; y++) {
+          for (let x = -3; x < 4; x++) {
             this.drawHexagon(canvas, ctx, x, y)
           }
         }
