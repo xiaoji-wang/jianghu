@@ -1,6 +1,7 @@
 <template>
   <div style="height: 120px;width: 104px;position: relative;">
-    <!--<router-link to="/">{{msg}}</router-link>-->
+    <router-link to="/">div</router-link>
+    <router-link to="/world2">canvas</router-link>
     <div class="div div1"></div>
     <div class="div div2"></div>
     <div class="div div3"></div>

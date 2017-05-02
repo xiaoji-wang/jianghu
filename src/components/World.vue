@@ -9,6 +9,8 @@
         <option value="80">80</option>
         <option value="100">100</option>
       </select>
+      <input type="text" v-model="row"/>
+      <input type="text" v-model="col"/>
     </div>
     <div style="height: 50%;overflow: hidden;position: relative;background: #888;">
       <div style="position: absolute;background: #444;transition: margin-top,margin-left 1s,1s;" :style="center">
@@ -74,10 +76,10 @@
     data () {
       return {
         lengthen: 40,
-        row: 10,
-        col: 10,
-        x: 5,
-        y: 5
+        row: 3,
+        col: 3,
+        x: 2,
+        y: 2
       }
     }
   }
