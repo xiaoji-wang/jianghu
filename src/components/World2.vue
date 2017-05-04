@@ -13,7 +13,7 @@
     name: 'world2',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 6)
+        return Math.floor(this.canvas.height / 8)
       },
       width () {
         return (Math.floor(this.lengthen * 0.866) << 1)
@@ -23,13 +23,14 @@
       },
       canvas () {
         return document.getElementById('canvas')
+      },
+      centerPixels () {
+        return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       }
-//      centerPixels () {
-//        return this.axisToPixels({x: 0, y: 0})
-//      }
     },
     methods: {
       move (e) {
+        this.isClick = true
         this.pixelsPoint.click.x = e.offsetX
         this.pixelsPoint.click.y = e.offsetY
       },
@@ -43,45 +44,50 @@
         let pixels = this.axisToPixels({x: x, y: y})
         let lx = pixels.x
         let ly = pixels.y
-        if (this.pixelsPoint.offset.x !== Math.trunc(this.pixelsPoint.offset.tx)) {
-          if (this.pixelsPoint.offset.x > 0) {
-            this.pixelsPoint.offset.tx += 0.2
-          } else if (this.pixelsPoint.offset.x < 0) {
-            this.pixelsPoint.offset.tx -= 0.2
-          }
-          lx += this.pixelsPoint.offset.tx
-        } else {
-          this.pixelsPoint.offset.cx += this.pixelsPoint.offset.x
+//        if (this.pixelsPoint.offset.x !== Math.trunc(this.pixelsPoint.offset.tx)) {
+//          if (this.pixelsPoint.offset.x > 0) {
+//            this.pixelsPoint.offset.tx += 0.01
+//          } else if (this.pixelsPoint.offset.x < 0) {
+//            this.pixelsPoint.offset.tx -= 0.01
+//          }
+//          lx += this.pixelsPoint.offset.tx
+//        } else {
+//          this.pixelsPoint.offset.cx += this.pixelsPoint.offset.x
 //          this.pixelsPoint.offset.x = 0
 //          this.pixelsPoint.offset.tx = 0
-          lx += this.pixelsPoint.offset.cx
-        }
-        if (this.pixelsPoint.offset.y !== Math.trunc(this.pixelsPoint.offset.ty)) {
-          if (this.pixelsPoint.offset.y > 0) {
-            this.pixelsPoint.offset.ty += 0.28
-          } else if (this.pixelsPoint.offset.y < 0) {
-            this.pixelsPoint.offset.ty -= 0.28
-          }
-          ly += this.pixelsPoint.offset.ty
-        } else {
-          this.pixelsPoint.offset.cy += this.pixelsPoint.offset.y
+        lx += this.pixelsPoint.offset.x
+//          this.isMove = false
+//        }
+//        if (this.pixelsPoint.offset.y !== Math.trunc(this.pixelsPoint.offset.ty)) {
+//          if (this.pixelsPoint.offset.y > 0) {
+//            this.pixelsPoint.offset.ty += 0.01
+//          } else if (this.pixelsPoint.offset.y < 0) {
+//            this.pixelsPoint.offset.ty -= 0.01
+//          }
+//          ly += this.pixelsPoint.offset.ty
+//        } else {
+//          this.pixelsPoint.offset.cy += this.pixelsPoint.offset.y
 //          this.pixelsPoint.offset.y = 0
 //          this.pixelsPoint.offset.ty = 0
-          ly += this.pixelsPoint.offset.cy
-        }
+        ly += this.pixelsPoint.offset.y
+//        this.isMove = false
+//        }
         ctx.beginPath()
         this.drawLine(ctx, lx, ly)
-        if (ctx.isPointInPath(this.pixelsPoint.click.x + this.pixelsPoint.offset.tx + this.pixelsPoint.offset.cx, this.pixelsPoint.click.y + this.pixelsPoint.offset.ty + this.pixelsPoint.offset.cy)) {
-          if (this.axisPoint.old.x !== x || this.axisPoint.old.y !== y) {
-            let oldPixelsPoint = this.axisToPixels(this.axisPoint.old)
-            this.pixelsPoint.offset.x += (oldPixelsPoint.x - lx)
-            this.pixelsPoint.offset.y += (oldPixelsPoint.y - ly)
-            this.axisPoint.old.x += x
-            this.axisPoint.old.y += y
-            console.info(this.pixelsPoint.offset.x + ',' + this.pixelsPoint.offset.y)
-          }
-          this.axisPoint.current.x = x
-          this.axisPoint.current.y = y
+        if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
+          let tx = this.axisPoint.old.x - x
+          this.pixelsPoint.offset.x += ((this.axisPoint.old.y - y) % 2 === 0 ? tx * this.width : tx * this.width + this.width * 0.5)
+          this.pixelsPoint.offset.y += (this.axisPoint.old.y - y) * 1.5 * this.lengthen
+          this.axisPoint.old.x = x
+          this.axisPoint.old.y = y
+//          this.isMove = true
+          console.info(this.pixelsPoint.offset.x + ',' + this.pixelsPoint.offset.y)
+//            this.axisPoint.current.x = x
+//            this.axisPoint.current.y = y
+//          }
+          this.isClick = false
+        }
+        if (!this.isMove && ctx.isPointInPath(this.centerPixels.x, this.centerPixels.y)) {
           ctx.fillStyle = 'wheat'
           ctx.fill()
           this.drawText(ctx, 'black', lx, ly, text)
@@ -116,8 +122,8 @@
       ctx.textBaseline = 'middle'
       let fn = () => {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        for (let y = -3; y < 4; y++) {
-          for (let x = -4; x < 5; x++) {
+        for (let y = -2; y < 3; y++) {
+          for (let x = -3; x < 3; x++) {
             this.drawHexagon(ctx, x, y, x + ',' + y)
           }
         }
@@ -127,9 +133,11 @@
     },
     data () {
       return {
+        isClick: false,
+        isMove: false,
         axisPoint: {
-          old: {x: 0, y: 0},
-          current: {x: 0, y: 0}
+          old: {x: 0, y: 0}
+//          current: {x: 0, y: 0}
         },
         pixelsPoint: {
           offset: {x: 0, y: 0, tx: 0, ty: 0, cx: 0, cy: 0},
