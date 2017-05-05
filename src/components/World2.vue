@@ -1,152 +1,106 @@
 <template>
-  <div style="height: 100%;background: black;">
-    <div style="height: 30%;">
+  <div style="height: 100%;">
+    <div style="height: 20%;">
       <router-link to="/login">123</router-link>
+      <select v-model="lengthen">
+        <option value="20">20</option>
+        <option value="40">40</option>
+        <option value="60">60</option>
+        <option value="80">80</option>
+        <option value="100">100</option>
+      </select>
+      <input type="text" v-model="row"/>
+      <input type="text" v-model="col"/>
     </div>
-    <div style="height: 40%;">
-      <canvas id="canvas" @click="move($event)"></canvas>
+    <div style="height: 50%;overflow: hidden;position: relative;background: #888;">
+      <div style="position: absolute;background: #444;transition: margin-top,margin-left 1s,1s;" :style="center">
+        <div style="position: absolute;" v-for="i in (row * col)" :style="{left: left(i) + 'px', top: top(i) + 'px'}">
+          <div class="hexagon hexagon1" :style="hexagon"
+               :class="{current: current(i - 1 - Math.floor((i - 1) / col) * col, Math.floor((i - 1) / col))}"></div>
+          <div class="hexagon hexagon2" :style="hexagon"
+               :class="{current: current(i - 1 - Math.floor((i - 1) / col) * col, Math.floor((i - 1) / col))}"></div>
+          <div class="hexagon" :style="hexagon"
+               :class="{current: current(i - 1 - Math.floor((i - 1) / col) * col, Math.floor((i - 1) / col))}"
+               @click="move(i - 1 - Math.floor((i - 1) / col) * col, Math.floor((i - 1) / col))">
+            <span>{{i - 1 - Math.floor((i - 1) / col) * col}}, {{Math.floor((i - 1) / col)}}</span>
+          </div>
+        </div>
+      </div>
+      <div
+        style="position: absolute;left: 50%;top: 50%;width: 34px;height: 40px;margin-top: -20px;margin-left: -17px;z-index: 2;border: solid 1px white;"></div>
     </div>
   </div>
 </template>
+
 <script>
   export default {
-    name: 'world2',
-    computed: {
-      lengthen () {
-        return Math.floor(this.canvas.height / 8)
-      },
-      width () {
-        return (Math.floor(this.lengthen * 0.866) << 1)
-      },
-      halfWidth () {
-        return this.width >> 1
-      },
-      canvas () {
-        return document.getElementById('canvas')
-      },
-      centerPixels () {
-        return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
-      }
-    },
+    name: 'world',
     methods: {
-      move (e) {
-        this.isClick = true
-        this.pixelsPoint.click.x = e.offsetX
-        this.pixelsPoint.click.y = e.offsetY
+      top (i) {
+        let y = Math.floor((i - 1) / this.col)
+        return y * 1.5 * this.lengthen - y
       },
-      axisToPixels (axis) {
-        return {
-          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : this.halfWidth),
-          y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - (this.lengthen >> 1))
-        }
+      left (i) {
+        let y = Math.floor((i - 1) / this.col)
+        let x = i - y * this.col - 1
+        return (y % 2 === 0 ? x * this.width : x * this.width + this.width / 2) + x
       },
-      drawHexagon (ctx, x, y, text) {
-        let pixels = this.axisToPixels({x: x, y: y})
-        let lx = pixels.x
-        let ly = pixels.y
-//        if (this.pixelsPoint.offset.x !== Math.trunc(this.pixelsPoint.offset.tx)) {
-//          if (this.pixelsPoint.offset.x > 0) {
-//            this.pixelsPoint.offset.tx += 0.01
-//          } else if (this.pixelsPoint.offset.x < 0) {
-//            this.pixelsPoint.offset.tx -= 0.01
-//          }
-//          lx += this.pixelsPoint.offset.tx
-//        } else {
-//          this.pixelsPoint.offset.cx += this.pixelsPoint.offset.x
-//          this.pixelsPoint.offset.x = 0
-//          this.pixelsPoint.offset.tx = 0
-        lx += this.pixelsPoint.offset.x
-//          this.isMove = false
-//        }
-//        if (this.pixelsPoint.offset.y !== Math.trunc(this.pixelsPoint.offset.ty)) {
-//          if (this.pixelsPoint.offset.y > 0) {
-//            this.pixelsPoint.offset.ty += 0.01
-//          } else if (this.pixelsPoint.offset.y < 0) {
-//            this.pixelsPoint.offset.ty -= 0.01
-//          }
-//          ly += this.pixelsPoint.offset.ty
-//        } else {
-//          this.pixelsPoint.offset.cy += this.pixelsPoint.offset.y
-//          this.pixelsPoint.offset.y = 0
-//          this.pixelsPoint.offset.ty = 0
-        ly += this.pixelsPoint.offset.y
-//        this.isMove = false
-//        }
-        ctx.beginPath()
-        this.drawLine(ctx, lx, ly)
-        if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
-          let tx = this.axisPoint.old.x - x
-          this.pixelsPoint.offset.x += ((this.axisPoint.old.y - y) % 2 === 0 ? tx * this.width : tx * this.width + this.width * 0.5)
-          this.pixelsPoint.offset.y += (this.axisPoint.old.y - y) * 1.5 * this.lengthen
-          this.axisPoint.old.x = x
-          this.axisPoint.old.y = y
-//          this.isMove = true
-          console.info(this.pixelsPoint.offset.x + ',' + this.pixelsPoint.offset.y)
-//            this.axisPoint.current.x = x
-//            this.axisPoint.current.y = y
-//          }
-          this.isClick = false
-        }
-        if (!this.isMove && ctx.isPointInPath(this.centerPixels.x, this.centerPixels.y)) {
-          ctx.fillStyle = 'wheat'
-          ctx.fill()
-          this.drawText(ctx, 'black', lx, ly, text)
-        } else {
-          ctx.stroke()
-          this.drawText(ctx, 'white', lx, ly, text)
-        }
-        ctx.closePath()
+      move (x, y) {
+        this.x = x
+        this.y = y
       },
-      drawLine (ctx, x, y) {
-        let quarterHeight = this.lengthen >> 1
-        ctx.moveTo(x - this.halfWidth, y - quarterHeight)
-        ctx.lineTo(x, y - this.lengthen)
-        ctx.lineTo(x + this.halfWidth, y - quarterHeight)
-        ctx.lineTo(x + this.halfWidth, y + quarterHeight)
-        ctx.lineTo(x, y + this.lengthen)
-        ctx.lineTo(x - this.halfWidth, y + quarterHeight)
-        ctx.lineTo(x - this.halfWidth, y - quarterHeight)
-      },
-      drawText (ctx, color, x, y, text) {
-        ctx.fillStyle = color
-        ctx.fillText(text, x, y)
+      current (x, y) {
+        return x === this.x && y === this.y
       }
     },
-    mounted () {
-      this.canvas.width = window.innerWidth
-      this.canvas.height = this.canvas.parentNode.clientHeight
-      let ctx = this.canvas.getContext('2d')
-      this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
-      ctx.strokeStyle = 'wheat'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      let fn = () => {
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        for (let y = -2; y < 3; y++) {
-          for (let x = -3; x < 3; x++) {
-            this.drawHexagon(ctx, x, y, x + ',' + y)
-          }
+    computed: {
+      width () {
+        return Math.round(this.lengthen / 0.57735) - 2
+      },
+      center () {
+        return {
+          top: '50%',
+          left: '50%',
+          marginTop: -1 * this.top(this.y * this.col + this.x + 1) - this.lengthen + 'px',
+          marginLeft: -1 * (this.left(this.x + 1) + (this.y % 2 === 0 ? this.width / 2 : this.width)) + 'px'
         }
-        window.requestAnimationFrame(fn)
+      },
+      hexagon () {
+        return {
+          marginTop: this.lengthen / 2 + 'px',
+          height: this.lengthen + 'px',
+          width: this.width + 'px'
+        }
       }
-      fn()
     },
     data () {
       return {
-        isClick: false,
-        isMove: false,
-        axisPoint: {
-          old: {x: 0, y: 0}
-//          current: {x: 0, y: 0}
-        },
-        pixelsPoint: {
-          offset: {x: 0, y: 0, tx: 0, ty: 0, cx: 0, cy: 0},
-          click: {x: 0, y: 0}
-        }
+        lengthen: 40,
+        row: 3,
+        col: 3,
+        x: 2,
+        y: 2
       }
     }
   }
 </script>
-<style scoped>
 
+<style scoped>
+  .hexagon {
+    position: absolute;
+    border-left: 1px solid wheat;
+    border-right: 1px solid wheat;
+  }
+
+  .hexagon1 {
+    transform: rotate(60deg);
+  }
+
+  .hexagon2 {
+    transform: rotate(120deg);
+  }
+
+  .current {
+    background: wheat;
+  }
 </style>
