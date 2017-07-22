@@ -1,10 +1,13 @@
 <template>
-  <div style="height: 100%;background: black;">
-    <div style="height: 30%;">
+  <div style="height: 100%;">
+    <div style="height: 20%;background: #111">
       <router-link to="/login">123</router-link>
     </div>
-    <div style="height: 40%;">
+    <div style="height: 40%;background: #111;">
       <canvas id="canvas" @click="move($event)"></canvas>
+    </div>
+    <div style="height: 40%;background: #111">
+      <router-link to="/login">123</router-link>
     </div>
   </div>
 </template>
@@ -13,7 +16,7 @@
     name: 'world2',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 5)
+        return Math.floor(this.canvas.height >> 3)
       },
       width () {
         return (Math.floor(this.lengthen * 0.866) << 1)
@@ -65,7 +68,7 @@
           if (!forbid) {
             ctx.fillStyle = 'gray'
           } else {
-            ctx.fillStyle = 'black'
+            ctx.fillStyle = '#111'
           }
           ctx.fill()
           this.drawText(ctx, 'white', lx, ly, text)
@@ -101,7 +104,7 @@
       ctx.strokeStyle = 'wheat'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.font = '18px Arial'
+      ctx.font = '14px Arial'
       let fn = () => {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (let y = -2; y < 3; y++) {
