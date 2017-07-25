@@ -1,7 +1,9 @@
 <template>
   <div style="height: 100%;">
-    <div style="height: 20%;background: #111">
-      <router-link to="/login">123</router-link>
+    <div style="height: 20%;background: #111;color: #999;padding: 0 10px;position: relative;">
+      <span style="line-height: 30px;">明大侠</span>
+      <span></span>
+      <span></span>
     </div>
     <div style="height: 40%;background: #111;">
       <canvas id="canvas" @click="move($event)"></canvas>
@@ -45,8 +47,16 @@
       },
       drawHexagon (ctx, x, y, text, forbid) {
         let pixels = this.axisToPixels({x: x, y: y})
-        let lx = pixels.x + this.pixelsPoint.offset.x
-        let ly = pixels.y + this.pixelsPoint.offset.y
+        if (this.pixelsPoint.offset.x > 0) {
+          this.pixelsPoint.offset.x -= 0.1
+          this.axisPoint.old.x = 0
+        }
+        if (this.pixelsPoint.offset.x < 0) {
+          this.pixelsPoint.offset.x += 0.1
+          this.axisPoint.old.x = 0
+        }
+        let lx = pixels.x - this.pixelsPoint.offset.x
+        let ly = pixels.y // + this.pixelsPoint.offset.y
         ctx.beginPath()
         this.drawLine(ctx, lx, ly)
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
@@ -57,22 +67,23 @@
             this.pixelsPoint.offset.y += ty * 1.5 * this.lengthen
             this.axisPoint.old.x = x
             this.axisPoint.old.y = y
+            this.centerPixels.x = this.pixelsPoint.offset.x
           }
           this.isClick = false
         }
-        if (ctx.isPointInPath(this.centerPixels.x, this.centerPixels.y)) {
-          ctx.fillStyle = 'wheat'
-          ctx.fill()
-          this.drawText(ctx, 'black', lx, ly, text)
-        } else {
-          if (!forbid) {
-            ctx.fillStyle = 'gray'
-          } else {
-            ctx.fillStyle = '#111'
-          }
-          ctx.fill()
-          this.drawText(ctx, 'white', lx, ly, text)
-        }
+//        if (ctx.isPointInPath(this.centerPixels.x, this.centerPixels.y)) {
+//          ctx.fillStyle = 'wheat'
+//          ctx.fill()
+//          this.drawText(ctx, 'black', lx, ly, text)
+//        } else {
+//          if (!forbid) {
+//            ctx.fillStyle = 'gray'
+//          } else {
+//            ctx.fillStyle = '#111'
+//          }
+//          ctx.fill()
+//          this.drawText(ctx, 'white', lx, ly, text)
+//        }
         ctx.closePath()
       },
       drawLine (ctx, x, y) {
@@ -108,8 +119,8 @@
       let fn = () => {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (let y = -2; y < 3; y++) {
-          for (let x = -4; x < 4; x++) {
-            if (y === -2 || y === 2 || x === -4 || x === 3) {
+          for (let x = -4; x < 5; x++) {
+            if (y === -2 || y === 2 || x === -4 || x === 4) {
               this.drawHexagon(ctx, x, y, '', true)
             } else {
               let name = this.maps.length === 0 ? '' : this.maps[y + 1].map[x + 3].name
