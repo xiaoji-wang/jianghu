@@ -13,7 +13,10 @@
     name: 'world2',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 6)
+        return Math.floor(this.canvas.height / 5)
+      },
+      quarterHeight () {
+        return this.lengthen >> 1
       },
       width () {
         return (Math.floor(this.lengthen * 0.866) << 1)
@@ -72,27 +75,26 @@
         ctx.beginPath()
         this.drawHexagon(ctx, local.x, local.y)
         this.startMove(ctx, x, y)
-//        this.drawText(ctx, local.x, local.y, text)
+        this.drawText(ctx, local.x, local.y, text)
         ctx.closePath()
       },
-      drawHexagon (ctx, x, y) {
-        let quarterHeight = this.lengthen >> 1
-        ctx.moveTo(x - this.halfWidth, y - quarterHeight)
-        ctx.lineTo(x, y - this.lengthen)
-        ctx.lineTo(x + this.halfWidth, y - quarterHeight)
-        ctx.lineTo(x + this.halfWidth, y + quarterHeight)
-        ctx.lineTo(x, y + this.lengthen)
-        ctx.lineTo(x - this.halfWidth, y + quarterHeight)
-        ctx.lineTo(x - this.halfWidth, y - quarterHeight)
+      drawHexagon (ctx, px, py) {
+        ctx.moveTo(px - this.halfWidth, py - this.quarterHeight)
+        ctx.lineTo(px, py - this.lengthen)
+        ctx.lineTo(px + this.halfWidth, py - this.quarterHeight)
+        ctx.lineTo(px + this.halfWidth, py + this.quarterHeight)
+        ctx.lineTo(px, py + this.lengthen)
+        ctx.lineTo(px - this.halfWidth, py + this.quarterHeight)
+        ctx.lineTo(px - this.halfWidth, py - this.quarterHeight)
         ctx.stroke()
       },
-      drawText (ctx, x, y, text) {
+      drawText (ctx, px, py, text) {
         if (!this.isMove()) {
           if (ctx.isPointInPath(this.centerPixels.x, this.centerPixels.y)) {
             ctx.fillStyle = 'wheat'
             ctx.fill()
             ctx.fillStyle = 'black'
-            ctx.fillText(text, x, y)
+            ctx.fillText(text, px, py)
 //            this.drawText(ctx, 'wheat', lx, ly, x + ',' + y)
 //          } else {
 //            if (!forbid) {
@@ -106,21 +108,21 @@
 //            this.drawText(ctx, 'white', lx, ly, text)
           } else {
             ctx.fillStyle = 'wheat'
-            ctx.fillText(text, x, y)
+            ctx.fillText(text, px, py)
           }
         }
       },
       offset (x, y) {
         let pixels = this.axisToPixels({x: x, y: y})
         if (this.pixelsPoint.offset.x > 0) {
-          this.pixelsPoint.offset.x -= this.distanceX
+          this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x < 0) {
             this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
           }
         }
         if (this.pixelsPoint.offset.x < 0) {
-          this.pixelsPoint.offset.x += this.distanceX
+          this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x > 0) {
             this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
@@ -147,7 +149,7 @@
       },
       getMaps () {
         this.axios.get('/static/data.json').then((response) => {
-          this.maps = response.data.maps
+          this.maps.cells = response.data.maps
         })
       }
     },
@@ -160,10 +162,14 @@
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.font = '14px Arial'
+      let startY = Math.floor(this.maps.size.y / 2)
+      let endY = Math.ceil(this.maps.size.y / 2)
+      let startX = Math.floor(this.maps.size.x / 2)
+      let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        for (let y = -3; y < 4; y++) {
-          for (let x = -4; x < 5; x++) {
+        for (let y = -startY; y < endY; y++) {
+          for (let x = -startX; x < endX; x++) {
 //            if (y === -2 || y === 2 || x === -4 || x === 3) {
 //              this.drawMap(ctx, x, y, '', true)
 //            } else {
@@ -181,7 +187,7 @@
     data () {
       return {
         isClick: false,
-        maps: [],
+        maps: {size: {x: 7, y: 5}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0}
         },
