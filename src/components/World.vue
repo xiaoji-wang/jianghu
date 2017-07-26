@@ -75,12 +75,12 @@
           y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - (this.lengthen >> 1))
         }
       },
-      drawMap (ctx, x, y, text, forbid) {
+      drawMap (ctx, x, y, cell) {
         let local = this.offset(x, y)
         ctx.beginPath()
         this.drawHexagon(ctx, local.x, local.y)
         this.startMove(ctx, x, y)
-        this.drawText(ctx, local.x, local.y, text)
+        this.drawText(ctx, local.x, local.y, cell)
         ctx.closePath()
       },
       drawHexagon (ctx, px, py) {
@@ -93,15 +93,15 @@
         ctx.lineTo(px - this.halfWidth, py - this.quarterHeight)
         ctx.stroke()
       },
-      drawText (ctx, px, py, text) {
+      drawText (ctx, px, py, cell) {
         if (ctx.isPointInPath(this.centerPixels.x - this.pixelsPoint.offset.x, this.centerPixels.y - this.pixelsPoint.offset.y)) {
           ctx.fillStyle = '#388E8E'
           ctx.fill()
           ctx.fillStyle = 'black'
-          ctx.fillText(text, px, py)
-        } else {
+          ctx.fillText(cell.name, px, py)
+        } else if (cell) {
           ctx.fillStyle = '#388E8E'
-          ctx.fillText(text, px, py)
+          ctx.fillText(cell.name, px, py)
         }
       },
       offset (x, y) {
@@ -162,9 +162,18 @@
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (let y = -startY; y < endY; y++) {
           for (let x = -startX; x < endX; x++) {
-            let name = (x + this.axisPoint.current.x) + ',' + (y + this.axisPoint.current.y) // this.maps.length === 0 ? '' : this.maps[y + 1].map[x + 3].name
-            let forbid = false // this.maps.length === 0 ? true : this.maps[y + 1].map[x + 3].forbid
-            this.drawMap(ctx, x, y, name, forbid)
+//            let name = (x + this.axisPoint.current.x) + ',' + (y + this.axisPoint.current.y)
+            let cell = null
+            let current = null
+            this.maps.cells.forEach((c) => {
+              if (c.current) {
+                current = c
+              }
+            })
+            if (current.axisPoint.x + this.axisPoint.current.x === x && current.axisPoint.y + this.axisPoint.current.y === y) {
+              cell = current
+            }
+            this.drawMap(ctx, x, y, cell)
           }
         }
         window.requestAnimationFrame(fn)
