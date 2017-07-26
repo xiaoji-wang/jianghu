@@ -1,84 +1,68 @@
 {
   "maps": [
     {
-      "map": [
-        {
-          "name": "",
-          "forbid": true
-        },
-        {
-          "name": "",
-          "forbid": true
-        },
-        {
-          "name": "",
-          "forbid": true
-        },
-        {
-          "name": "04"
-        },
-        {
-          "name": "",
-          "forbid": true
-        },
-        {
-          "name": "06"
-        },
-        {
-          "name": "07"
-        }
-      ]
+      "name": "06",
+      "axisPoint": {
+        "x": 1,
+        "y": 2
+      }
     },
     {
-      "map": [
-        {
-          "name": "11"
-        },
-        {
-          "name": "小路"
-        },
-        {
-          "name": "镇口"
-        },
-        {
-          "name": "平安镇"
-        },
-        {
-          "name": "15"
-        },
-        {
-          "name": "16"
-        },
-        {
-          "name": "17"
-        }
-      ]
+      "name": "07",
+      "axisPoint": {
+        "x": 1,
+        "y": 3
+      }
     },
     {
-      "map": [
-        {
-          "name": "21"
-        },
-        {
-          "name": "22"
-        },
-        {
-          "name": "",
-          "forbid": true
-        },
-        {
-          "name": "24"
-        },
-        {
-          "name": "25"
-        },
-        {
-          "name": "26"
-        },
-        {
-          "name": "27"
-        }
-      ]
+      "name": "11",
+      "axisPoint": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "name": "小路",
+      "axisPoint": {
+        "x": 1,
+        "y": 5
+      }
+    },
+    {
+      "name": "镇口",
+      "axisPoint": {
+        "x": 2,
+        "y": 5
+      }
+    },
+    {
+      "name": "平安镇",
+      "axisPoint": {
+        "x": 3,
+        "y": 5
+      },
+      "current": true
+    },
+    {
+      "name": "15",
+      "axisPoint": {
+        "x": 4,
+        "y": 5
+      }
+    },
+    {
+      "name": "16",
+      "axisPoint": {
+        "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "name": "17",
+      "axisPoint": {
+        "x": -1,
+        "y": 1
+      }
     }
   ]
 }
