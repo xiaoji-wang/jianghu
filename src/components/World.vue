@@ -17,8 +17,11 @@
     <div style="height: 40%;">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
-    <div style="height: 40%;">
-      <img src="../assets/a.jpg">
+    <div style="margin-top: 20px;">
+      <button>老者</button>
+      <button>路人</button>
+      <button>野草</button>
+      <button>石头</button>
     </div>
     <!--<div style="position: fixed;z-index: 999;top: 0;background: white;display: block;">-->
     <roleInfo style="position: absolute;z-index: 9;display: none;"></roleInfo>
@@ -32,7 +35,7 @@
     components: {'roleInfo': roleInfo},
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 5)
+        return Math.floor(this.canvas.height >> 3)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -223,7 +226,7 @@
     data () {
       return {
         isClick: false,
-        maps: {name: '', size: {x: 7, y: 5}, cells: []},
+        maps: {name: '', size: {x: 9, y: 7}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0},
           current: {x: 0, y: 0}
@@ -237,5 +240,8 @@
   }
 </script>
 <style scoped>
-
+button{
+  width: 60px;
+  margin: 10px 0 10px 10px;
+}
 </style>
