@@ -1,5 +1,6 @@
 {
-  "maps": [
+  "name": "大地图",
+  "cells": [
     {
       "name": "06",
       "axisPoint": {
@@ -18,6 +19,27 @@
       "name": "11",
       "axisPoint": {
         "x": 1,
+        "y": 6
+      }
+    },
+    {
+      "name": "11",
+      "axisPoint": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "name": "11",
+      "axisPoint": {
+        "x": 2,
+        "y": 3
+      }
+    },
+    {
+      "name": "11",
+      "axisPoint": {
+        "x": 2,
         "y": 4
       }
     },
@@ -41,7 +63,7 @@
         "x": 3,
         "y": 5
       },
-      "current": true
+      "startPoint": true
     },
     {
       "name": "15",
@@ -54,6 +76,13 @@
       "name": "16",
       "axisPoint": {
         "x": 0,
+        "y": 1
+      }
+    },
+    {
+      "name": "16",
+      "axisPoint": {
+        "x": 1,
         "y": 1
       }
     },

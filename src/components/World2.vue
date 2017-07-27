@@ -34,7 +34,7 @@
 
 <script>
   export default {
-    name: 'world',
+    name: 'world2',
     methods: {
       top (i) {
         let y = Math.floor((i - 1) / this.col)

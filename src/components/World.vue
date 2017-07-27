@@ -1,16 +1,35 @@
 <template>
   <div style="height: 100%;background: black;">
-    <div style="height: 30%;">
-      <router-link to="/login">123</router-link>
+    <div style="height: 20%;position: relative;">
+      <div @click='nameClick' style="color: #ddd;position: absolute;left: 5px;">
+        王小明
+      </div>
+      <div style="color: green;position: absolute;left: 50%;width: 160px;margin-left: -80px;text-align: center;">
+        -&nbsp;{{maps.name}}&nbsp;-
+      </div>
+      <div style="color: #ddd;position: absolute;right: 5px;">
+        背包
+      </div>
+      <div style="color: #ddd;padding: 25px 5px 0;font-size: 14px;text-indent:2em;">
+        这是一片深山，树木茂密，不时传来不知名的野兽的吼叫。你感觉到了一股莫名的危险。
+      </div>
     </div>
     <div style="height: 40%;">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
+    <div style="height: 40%;">
+      <img src="../assets/a.jpg">
+    </div>
+    <!--<div style="position: fixed;z-index: 999;top: 0;background: white;display: block;">-->
+    <roleInfo style="position: absolute;z-index: 9;display: none;"></roleInfo>
+    <!--</div>-->
   </div>
 </template>
 <script>
+  import roleInfo from './RoleInfo'
   export default {
-    name: 'world2',
+    name: 'world',
+    components: {'roleInfo': roleInfo},
     computed: {
       lengthen () {
         return Math.floor(this.canvas.height / 5)
@@ -31,10 +50,18 @@
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       },
       distanceX () {
-        return 0.2
+        return 0.1
       },
       distanceY () {
         return this.distanceX * 1.73
+      },
+      startMapCell () {
+        for (let i = 0; i < this.maps.cells.length; i++) {
+          if (this.maps.cells[i].startPoint) {
+            return this.maps.cells[i]
+          }
+        }
+        return null
       }
     },
     methods: {
@@ -45,10 +72,16 @@
           this.pixelsPoint.click.y = e.offsetY
         }
       },
+      nameClick () {
+
+      },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
       },
       ableArrive (x, y) {
+        if (!this.getMapCellByAxis(x, y)) {
+          return false
+        }
         if (this.axisPoint.current.y % 2 === 0) {
           return x >= -1 && (x < 1 || (x === 1 && y === 0)) && y >= -1 && y <= 1
         }
@@ -98,9 +131,13 @@
           ctx.fillStyle = '#388E8E'
           ctx.fill()
           ctx.fillStyle = 'black'
-          ctx.fillText(cell.name, px, py)
+          if (cell) {
+            ctx.fillText(cell.name, px, py)
+          }
         } else if (cell) {
-          ctx.fillStyle = '#388E8E'
+          ctx.fillStyle = '#CAE1FF'
+          ctx.fill()
+          ctx.fillStyle = 'black'
           ctx.fillText(cell.name, px, py)
         }
       },
@@ -141,8 +178,21 @@
       },
       getMaps () {
         this.axios.get('/static/data.json').then((response) => {
-          this.maps.cells = response.data.maps
+          this.maps.name = response.data.name
+          this.maps.cells = response.data.cells
         })
+      },
+      getMapCellByAxis (x, y) {
+        if (!this.startMapCell) {
+          return null
+        }
+        for (let i = 0; i < this.maps.cells.length; i++) {
+          let cell = this.maps.cells[i]
+          if (cell.axisPoint.x === this.axisPoint.current.x + this.startMapCell.axisPoint.x + x && cell.axisPoint.y === this.axisPoint.current.y + this.startMapCell.axisPoint.y + y) {
+            return cell
+          }
+        }
+        return null
       }
     },
     mounted () {
@@ -162,29 +212,18 @@
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (let y = -startY; y < endY; y++) {
           for (let x = -startX; x < endX; x++) {
-//            let name = (x + this.axisPoint.current.x) + ',' + (y + this.axisPoint.current.y)
-            let cell = null
-            let current = null
-            this.maps.cells.forEach((c) => {
-              if (c.current) {
-                current = c
-              }
-            })
-            if (current.axisPoint.x + this.axisPoint.current.x === x && current.axisPoint.y + this.axisPoint.current.y === y) {
-              cell = current
-            }
-            this.drawMap(ctx, x, y, cell)
+            this.drawMap(ctx, x, y, this.getMapCellByAxis(x, y))
           }
         }
         window.requestAnimationFrame(fn)
       }
-      this.getMaps()
       fn()
+      this.getMaps()
     },
     data () {
       return {
         isClick: false,
-        maps: {size: {x: 7, y: 5}, cells: []},
+        maps: {name: '', size: {x: 7, y: 5}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0},
           current: {x: 0, y: 0}

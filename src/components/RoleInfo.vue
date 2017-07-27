@@ -1,12 +1,12 @@
 <template>
-  <div style="height: 120px;width: 104px;position: relative;">
-    <router-link to="/world">步入江湖</router-link>
+  <div style="width: 100%;height: 100%;top: 0;background: black;">
+    <router-link to="/world">{{msg}}</router-link>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'login',
+    name: 'roleInfo',
     data () {
       return {
         msg: 'Welcome to Your Vue.js App'
