@@ -1,41 +1,36 @@
 <template>
-  <div style="height: 100%;background: black;">
-    <div style="height: 20%;position: relative;">
-      <div @click='nameClick' style="color: #ddd;position: absolute;left: 5px;">
-        王小明
+  <div style="height: 100%;background: black;position: relative;">
+    <div class="row" style="height: 3rem;">
+      <div style="color: #ddd;position: absolute;left: 5px;line-height: 3rem;">
+        王大明
       </div>
-      <div style="color: green;position: absolute;left: 50%;width: 160px;margin-left: -80px;text-align: center;">
+      <div
+        style="color: green;position: absolute;left: 50%;width: 160px;margin-left: -80px;text-align: center;line-height: 3rem;">
         -&nbsp;{{maps.name}}&nbsp;-
       </div>
-      <div style="color: #ddd;position: absolute;right: 5px;">
+      <div style="color: #ddd;position: absolute;right: 5px;line-height: 3rem;">
         背包
       </div>
-      <div style="color: #ddd;padding: 25px 5px 0;font-size: 14px;text-indent:2em;">
-        这是一片深山，树木茂密，不时传来不知名的野兽的吼叫。你感觉到了一股莫名的危险。
-      </div>
     </div>
-    <div style="height: 40%;">
+    <div  class="row" style="height: 5rem;color: #ddd;padding: 0 0.5rem;font-size: 14px;text-indent:2em;top: 2.5rem;">
+      {{currentCell.desc}}
+    </div>
+    <div class="row" style="height: 10rem;top:8rem;">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
-    <div style="margin-top: 20px;">
-      <button>老者</button>
-      <button>路人</button>
-      <button>野草</button>
-      <button>石头</button>
+    <div class="row" style="height: 4rem;top:18rem;">
+      <button v-for="n in currentCell.npc">{{n.name}}</button>
     </div>
-    <!--<div style="position: fixed;z-index: 999;top: 0;background: white;display: block;">-->
-    <roleInfo style="position: absolute;z-index: 9;display: none;"></roleInfo>
-    <!--</div>-->
+    <div class="row" style="background: #222;position: absolute;bottom: 0;left: 0;right: 0;height: 180px;">
+    </div>
   </div>
 </template>
 <script>
-  import roleInfo from './RoleInfo'
   export default {
     name: 'world',
-    components: {'roleInfo': roleInfo},
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height >> 3)
+        return Math.floor(this.canvas.height / 6)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -48,6 +43,9 @@
       },
       canvas () {
         return document.getElementById('canvas')
+      },
+      ctx () {
+        return this.canvas.getContext('2d')
       },
       centerPixels () {
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
@@ -65,18 +63,22 @@
           }
         }
         return null
+      },
+      currentCell () {
+        let center = this.getMapCellByAxis(0, 0)
+        if (center) {
+          return center
+        }
+        return {}
       }
     },
     methods: {
       click (e) {
         if (!this.isMove()) {
           this.isClick = true
-          this.pixelsPoint.click.x = e.offsetX
-          this.pixelsPoint.click.y = e.offsetY
+          this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
+          this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
         }
-      },
-      nameClick () {
-
       },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
@@ -116,7 +118,7 @@
         ctx.beginPath()
         this.drawHexagon(ctx, local.x, local.y)
         this.startMove(ctx, x, y)
-        this.drawText(ctx, local.x, local.y, cell)
+        this.drawText(ctx, local.x, local.y, x, y, cell)
         ctx.closePath()
       },
       drawHexagon (ctx, px, py) {
@@ -129,7 +131,7 @@
         ctx.lineTo(px - this.halfWidth, py - this.quarterHeight)
         ctx.stroke()
       },
-      drawText (ctx, px, py, cell) {
+      drawText (ctx, px, py, x, y, cell) {
         if (ctx.isPointInPath(this.centerPixels.x - this.pixelsPoint.offset.x, this.centerPixels.y - this.pixelsPoint.offset.y)) {
           ctx.fillStyle = '#388E8E'
           ctx.fill()
@@ -138,7 +140,11 @@
             ctx.fillText(cell.name, px, py)
           }
         } else if (cell) {
-          ctx.fillStyle = '#CAE1FF'
+          if (this.ableArrive(x, y)) {
+            ctx.fillStyle = '#B4EEB4'
+          } else {
+            ctx.fillStyle = '#CAE1FF'
+          }
           ctx.fill()
           ctx.fillStyle = 'black'
           ctx.fillText(cell.name, px, py)
@@ -196,26 +202,40 @@
           }
         }
         return null
+      },
+      getRatio (ctx) {
+        let devicePixelRatio = window.devicePixelRatio || 1
+        let backingStoreRatio = ctx.webkitBackingStorePixelRatio || ctx.mozBackingStorePixelRatio || ctx.msBackingStorePixelRatio || ctx.oBackingStorePixelRatio || ctx.backingStorePixelRatio || 1
+        return devicePixelRatio / backingStoreRatio
+      },
+      initCanvas () {
+        this.canvas.width = window.innerWidth
+        this.canvas.height = this.canvas.parentNode.clientHeight
+
+        this.canvas.style.width = this.canvas.width + 'px'
+        this.canvas.style.height = this.canvas.height + 'px'
+
+        this.canvas.width = this.canvas.width * this.getRatio(this.ctx)
+        this.canvas.height = this.canvas.height * this.getRatio(this.ctx)
+
+        this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
+        this.ctx.strokeStyle = '#388E8E'
+        this.ctx.textAlign = 'center'
+        this.ctx.textBaseline = 'middle'
+        this.ctx.font = '2rem Arial'
       }
     },
     mounted () {
-      this.canvas.width = window.innerWidth
-      this.canvas.height = this.canvas.parentNode.clientHeight
-      let ctx = this.canvas.getContext('2d')
-      this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
-      ctx.strokeStyle = '#388E8E'
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.font = '14px Arial'
+      this.initCanvas()
       let startY = Math.floor(this.maps.size.y / 2)
       let endY = Math.ceil(this.maps.size.y / 2)
       let startX = Math.floor(this.maps.size.x / 2)
       let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
         for (let y = -startY; y < endY; y++) {
           for (let x = -startX; x < endX; x++) {
-            this.drawMap(ctx, x, y, this.getMapCellByAxis(x, y))
+            this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
           }
         }
         window.requestAnimationFrame(fn)
@@ -226,7 +246,7 @@
     data () {
       return {
         isClick: false,
-        maps: {name: '', size: {x: 9, y: 7}, cells: []},
+        maps: {name: '', size: {x: 9, y: 5}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0},
           current: {x: 0, y: 0}
@@ -240,8 +260,21 @@
   }
 </script>
 <style scoped>
-button{
-  width: 60px;
-  margin: 10px 0 10px 10px;
-}
+  .row {
+    position: absolute;
+    left: 0;
+    right: 0;
+  }
+
+  button {
+    width: 60px;
+    margin: 10px 0 10px 10px;
+  }
+
+  canvas {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 </style>
