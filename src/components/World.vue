@@ -1,27 +1,38 @@
 <template>
-  <div style="height: 100%;background: black;position: relative;">
-    <div class="row" style="height: 3rem;">
-      <div style="color: #ddd;position: absolute;left: 5px;line-height: 3rem;">
+  <div style="height: 100%;background: black;position: relative;" @click="showRoleInfo=false">
+    <div class="row header">
+      <div class="name" @click="nameClick($event)">
         王大明
+        <ul v-show="showRoleInfo" style="text-align: center;">
+          <li>
+            <router-link to="/role">基本资料</router-link>
+          </li>
+          <li>
+            <router-link to="/">武&nbsp;&nbsp;功</router-link>
+          </li>
+          <li>
+            <router-link to="/">背&nbsp;&nbsp;包</router-link>
+          </li>
+        </ul>
       </div>
       <div
-        style="color: green;position: absolute;left: 50%;width: 160px;margin-left: -80px;text-align: center;line-height: 3rem;">
+        style="color: green;text-align: center;line-height: 2.5rem;">
         -&nbsp;{{maps.name}}&nbsp;-
       </div>
-      <div style="color: #ddd;position: absolute;right: 5px;line-height: 3rem;">
-        背包
+      <div style="color: #ddd;position: absolute;right: 0.5rem;line-height: 2.5rem;top:0;">
+        设置
       </div>
     </div>
-    <div  class="row" style="height: 5rem;color: #ddd;padding: 0 0.5rem;font-size: 14px;text-indent:2em;top: 2.5rem;">
+    <div class="row desc">
       {{currentCell.desc}}
     </div>
-    <div class="row" style="height: 10rem;top:8rem;">
+    <div class="row map">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
-    <div class="row" style="height: 4rem;top:18rem;">
-      <button v-for="n in currentCell.npc">{{n.name}}</button>
+    <div class="row npc">
+      <a v-for="n in currentCell.npc">{{n.name}}</a>
     </div>
-    <div class="row" style="background: #222;position: absolute;bottom: 0;left: 0;right: 0;height: 180px;">
+    <div class="row text">
     </div>
   </div>
 </template>
@@ -30,7 +41,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 6)
+        return Math.floor(this.canvas.height / 5)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -79,6 +90,10 @@
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
           this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
         }
+      },
+      nameClick (event) {
+        this.showRoleInfo = !this.showRoleInfo
+        event.cancelBubble = true
       },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
@@ -222,7 +237,7 @@
         this.ctx.strokeStyle = '#388E8E'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
-        this.ctx.font = '2rem Arial'
+        this.ctx.font = '2.5rem Arial'
       }
     },
     mounted () {
@@ -246,6 +261,7 @@
     data () {
       return {
         isClick: false,
+        showRoleInfo: false,
         maps: {name: '', size: {x: 9, y: 5}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0},
@@ -264,6 +280,70 @@
     position: absolute;
     left: 0;
     right: 0;
+    border-top: solid 0.1rem #388E8E;
+    border-left: solid 0.1rem #388E8E;
+    border-right: solid 0.1rem #388E8E;
+  }
+
+  .row.header {
+    height: 3rem;
+  }
+
+  .row.header div.name {
+    border-right: solid 0.1rem #338E8E;
+    color: rgb(221, 221, 221);
+    position: absolute;
+    left: 0.5rem;
+    padding-right: 0.5rem;
+    line-height: 2.5rem;
+    outline: none;
+  }
+
+  .row.header div.name:hover ul {
+    visibility: visible;
+  }
+
+  .row.header div.name ul {
+    position: absolute;
+    background: black;
+    padding: 0.2rem 0.5rem;
+    z-index: 9;
+    width: 5rem;
+    border: 0.1rem solid rgb(51, 142, 142);
+    margin-top: -0.1rem;
+    left: -0.5rem;
+  }
+
+  .row.desc {
+    height: 5rem;
+    color: #ddd;
+    padding: 0 0.5rem;
+    font-size: 14px;
+    text-indent: 2em;
+    top: 2.5rem;
+  }
+
+  .row.map {
+    height: 10rem;
+    top: 7.5rem;
+  }
+
+  .row.npc {
+    height: 4rem;
+    top: 17.5rem;
+  }
+
+  .row.text {
+    bottom: 0;
+    top: 21.5rem;
+    border-bottom: solid 0.1rem #388E8E;
+  }
+
+  a {
+    display: inline-block;
+    margin: 0.2rem;
+    color: #338E8E;
+    text-decoration: none;
   }
 
   button {
