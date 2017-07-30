@@ -59,13 +59,34 @@
       },
       "npc": [
         {
-          "name": "杀手乙"
+          "name": "杀手乙",
+          "operation": [
+            {
+              "name": "交谈",
+              "type": "print",
+              "params": "杀手乙：大爷在办事，死一边去。"
+            }
+          ]
         },
         {
-          "name": "杀手丙"
+          "name": "杀手丙",
+          "operation": [
+            {
+              "name": "交谈",
+              "type": "print",
+              "params": "杀手丙：不想死就滚。"
+            }
+          ]
         },
         {
-          "name": "杀手丁"
+          "name": "杀手丁",
+          "operation": [
+            {
+              "name": "交谈",
+              "type": "print",
+              "params": "杀手丁：小子，看见大爷手上的刀了吗。"
+            }
+          ]
         }
       ]
     },
@@ -77,7 +98,14 @@
       },
       "npc": [
         {
-          "name": "杀手甲"
+          "name": "杀手甲",
+          "operation": [
+            {
+              "name": "交谈",
+              "type": "print",
+              "params": "他似乎不想理你。"
+            }
+          ]
         }
       ],
       "startPoint": true,

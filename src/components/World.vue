@@ -1,11 +1,11 @@
 <template>
-  <div style="height: 100%;background: black;position: relative;" @click="showRoleInfo=false">
+  <div style="height: 100%;background: black;position: relative;" @click="showRoleInfo=false;showNpcOperation=false">
     <div class="row header">
       <div class="name" @click="nameClick($event)">
         王大明
         <ul v-show="showRoleInfo" style="text-align: center;">
           <li>
-            <router-link to="/role">基本资料</router-link>
+            <router-link to="/role">资&nbsp;&nbsp;料</router-link>
           </li>
           <li>
             <router-link to="/">武&nbsp;&nbsp;功</router-link>
@@ -30,10 +30,14 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <a v-for="n in currentCell.npc">{{n.name}}</a>
+      <a v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</a>
     </div>
-    <div class="row text">
+    <div id="text" class="row text">
+      <div v-for="s in console">{{s}}</div>
     </div>
+    <ul class="dialog" v-show="showNpcOperation">
+      <li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>
+    </ul>
   </div>
 </template>
 <script>
@@ -94,6 +98,18 @@
       nameClick (event) {
         this.showRoleInfo = !this.showRoleInfo
         event.cancelBubble = true
+      },
+      npcClick (event, npc) {
+        this.currentNpc = npc
+        this.showNpcOperation = !this.showNpcOperation
+        event.cancelBubble = true
+      },
+      npcOperationClick (operation) {
+        if (operation.type === 'print') {
+          this.console.push(operation.params)
+          let div = document.getElementById('text')
+          div.scrollTop = div.scrollHeight
+        }
       },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
@@ -262,6 +278,9 @@
       return {
         isClick: false,
         showRoleInfo: false,
+        showNpcOperation: false,
+        currentNpc: {},
+        console: [],
         maps: {name: '', size: {x: 9, y: 5}, cells: []},
         axisPoint: {
           old: {x: 0, y: 0},
@@ -337,13 +356,36 @@
     bottom: 0;
     top: 21.5rem;
     border-bottom: solid 0.1rem #388E8E;
+    color: #338E8E;
+    padding: 0.2rem;
+    overflow-y: auto;
+  }
+
+  .dialog {
+    position: absolute;
+    z-index: 999;
+    border: solid 0.1rem #338E8E;
+    width: 8rem;
+    height: 10rem;
+    background: black;
+    color: #338E8E;
+    left: 50%;
+    top: 50%;
+    margin-left: -4rem;
+    margin-top: -5rem;
+  }
+
+  .dialog li {
+    text-align: center;
+    padding: 0.5rem;
   }
 
   a {
     display: inline-block;
-    margin: 0.2rem;
+    margin: 0.5rem;
     color: #338E8E;
     text-decoration: none;
+    border: solid 0.1rem #338E8E;
   }
 
   button {
