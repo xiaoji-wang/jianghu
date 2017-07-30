@@ -385,7 +385,6 @@
     margin: 0.5rem;
     color: #338E8E;
     text-decoration: none;
-    border: solid 0.1rem #338E8E;
   }
 
   button {
