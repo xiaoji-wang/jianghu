@@ -48,8 +48,7 @@
           "operation": [
             {
               "name": "战斗",
-              "type": "fight",
-              "params": ""
+              "type": "fight"
             }
           ]
         },
@@ -57,9 +56,9 @@
           "name": "石头",
           "operation": [
             {
-              "name": "战斗",
-              "type": "fight",
-              "params": ""
+              "name": "查看",
+              "type": "print",
+              "params": "一块沉重的石头。"
             }
           ]
         }
@@ -87,6 +86,10 @@
               "name": "交谈",
               "type": "print",
               "params": "杀手乙：大爷在办事，死一边去。"
+            },
+            {
+              "name": "战斗",
+              "type": "fight"
             }
           ]
         },
@@ -97,6 +100,10 @@
               "name": "交谈",
               "type": "print",
               "params": "杀手丙：不想死就滚。"
+            },
+            {
+              "name": "战斗",
+              "type": "fight"
             }
           ]
         },
@@ -107,6 +114,10 @@
               "name": "交谈",
               "type": "print",
               "params": "杀手丁：小子，看见大爷手上的刀了吗。"
+            },
+            {
+              "name": "战斗",
+              "type": "fight"
             }
           ]
         }
@@ -126,6 +137,10 @@
               "name": "交谈",
               "type": "print",
               "params": "他似乎不想理你。"
+            },
+            {
+              "name": "战斗",
+              "type": "fight"
             }
           ]
         }

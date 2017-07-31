@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import World from '@/components/World'
 import RoleInfo from '@/components/RoleInfo'
+import Fight from '@/components/Fight'
 
 Vue.use(Router)
 
@@ -13,5 +14,7 @@ export default new Router({
     path: '/world', name: 'world', component: World
   }, {
     path: '/role', name: 'role', component: RoleInfo
+  }, {
+    path: '/fight', name: 'fight', component: Fight
   }]
 })

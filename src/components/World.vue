@@ -109,6 +109,8 @@
           this.console.push(operation.params)
           let div = document.getElementById('text')
           div.scrollTop = div.scrollHeight
+        } else if (operation.type === 'fight') {
+          this.$router.push('/fight')
         }
       },
       isMove () {
@@ -255,7 +257,7 @@
         this.ctx.strokeStyle = '#388E8E'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
-        this.ctx.font = ratio + 'rem Arial'
+        this.ctx.font = ratio + 'em Arial'
       }
     },
     mounted () {
