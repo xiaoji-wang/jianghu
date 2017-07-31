@@ -246,14 +246,16 @@
         this.canvas.style.width = this.canvas.width + 'px'
         this.canvas.style.height = this.canvas.height + 'px'
 
-        this.canvas.width = this.canvas.width * this.getRatio(this.ctx)
-        this.canvas.height = this.canvas.height * this.getRatio(this.ctx)
+        let ratio = this.getRatio(this.ctx)
+
+        this.canvas.width = this.canvas.width * ratio
+        this.canvas.height = this.canvas.height * ratio
 
         this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
         this.ctx.strokeStyle = '#388E8E'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
-        this.ctx.font = '2.5rem Arial'
+        this.ctx.font = ratio + 'rem Arial'
       }
     },
     mounted () {
