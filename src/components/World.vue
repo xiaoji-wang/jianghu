@@ -45,7 +45,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 5)
+        return Math.floor(this.canvas.height / 9)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -219,10 +219,22 @@
         }
       },
       getMaps () {
-        this.axios.get('/static/data.json').then((response) => {
-          this.maps.name = response.data.name
-          this.maps.cells = response.data.cells
-        })
+//        debugger
+//        this.$socket.emit('change', {a: 1})
+        let ws = new window.WebSocket('ws://localhost:8270/jianghu')
+        let _this = this
+        ws.onmessage = (e) => {
+          let jsonData = JSON.parse(e.data)
+          _this.maps.name = jsonData.name
+          _this.maps.cells = jsonData.cells
+        }
+        ws.onopen = () => {
+          ws.send(1)
+        }
+//        this.axios.get('/static/data.json').then((response) => {
+//          this.maps.name = response.data.name
+//          this.maps.cells = response.data.cells
+//        })
       },
       getMapCellByAxis (x, y) {
         if (!this.startMapCell) {
@@ -258,6 +270,23 @@
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
         this.ctx.font = ratio + 'em Arial'
+      }
+    },
+    socket: {
+//      namespace: '/jianghu',
+      events: {
+        changed (msg) {
+          window.console.log('Something changed: ' + msg)
+        },
+        connect () {
+          window.console.log('Websocket connected to ' + this.$socket.nsp)
+        },
+        disconnect () {
+          window.console.log('Websocket disconnected from ' + this.$socket.nsp)
+        },
+        error (err) {
+          window.console.error('Websocket error!', err)
+        }
       }
     },
     mounted () {
