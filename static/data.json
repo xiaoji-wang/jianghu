@@ -120,6 +120,26 @@
               "type": "fight"
             }
           ]
+        },
+        {
+          "name": "乞丐",
+          "operation": [
+            {
+              "name": "交谈",
+              "type": "print",
+              "params": "丐帮弟子：zZ……"
+            }
+          ]
+        },
+        {
+          "name": "石头",
+          "operation": [
+            {
+              "name": "查看",
+              "type": "print",
+              "params": "一块石头。"
+            }
+          ]
         }
       ]
     },

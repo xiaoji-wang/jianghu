@@ -30,7 +30,7 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <a v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</a>
+      <button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
     </div>
     <div id="text" class="row text">
       <div v-for="s in console">{{s}}</div>
@@ -383,6 +383,7 @@
   .row.npc {
     height: 4rem;
     top: 17.5rem;
+    padding-right: 1%;
   }
 
   .row.text {
@@ -413,16 +414,9 @@
     padding: 0.5rem;
   }
 
-  a {
-    display: inline-block;
-    margin: 0.5rem;
-    color: #338E8E;
-    text-decoration: none;
-  }
-
-  button {
-    width: 60px;
-    margin: 10px 0 10px 10px;
+  button{
+    margin: 0.2rem 0 0 1%;
+    width: 24%;
   }
 
   canvas {
