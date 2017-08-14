@@ -45,7 +45,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 9)
+        return Math.floor(this.canvas.height / 6)
       },
       quarterHeight () {
         return this.lengthen >> 1
