@@ -45,7 +45,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 6)
+        return Math.floor(this.canvas.height / 8)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -133,6 +133,7 @@
             let tx = this.axisPoint.old.x - x
             let ty = this.axisPoint.old.y - y
             this.pixelsPoint.offset.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
+//            this.pixelsPoint.offset.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (((this.offset ? ty + 1 : ty) % 2 === 0 ? 0 : this.halfWidth) + this.halfWidth + 1))
             this.pixelsPoint.offset.y += ty * 1.5 * this.lengthen
             this.axisPoint.old.x = x
             this.axisPoint.old.y = y
@@ -142,7 +143,8 @@
       },
       axisToPixels (axis) {
         return {
-          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth)),
+          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0 && this.isOffset) ? this.halfWidth : -this.halfWidth)),
+//          x: (this.canvas.width >> 1) + axis.x * this.width + ((this.offset ? axis.y + 1 : axis.y) % 2 === 0 ? 0 : this.halfWidth) + this.halfWidth + 1,
           y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - (this.lengthen >> 1))
         }
       },
@@ -221,7 +223,7 @@
       getMaps () {
 //        debugger
 //        this.$socket.emit('change', {a: 1})
-        let ws = new window.WebSocket('ws://localhost:8270/jianghu')
+        let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
         let _this = this
         ws.onmessage = (e) => {
           let jsonData = JSON.parse(e.data)
@@ -310,6 +312,7 @@
     data () {
       return {
         isClick: false,
+        isOffset: true,
         showRoleInfo: false,
         showNpcOperation: false,
         currentNpc: {},
@@ -414,7 +417,7 @@
     padding: 0.5rem;
   }
 
-  button{
+  button {
     margin: 0.2rem 0 0 1%;
     width: 24%;
   }
