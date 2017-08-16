@@ -1,5 +1,6 @@
 <template>
-  <div style="height: 100%;background: black;position: relative;" @click="showRoleInfo=false;showNpcOperation=false">
+  <div style="height: 100%;background: url('/static/image/bg.jpg');position: relative;"
+       @click="showRoleInfo=false;showNpcOperation=false">
     <div class="row header">
       <div class="name" @click="nameClick($event)">
         王大明
@@ -16,7 +17,7 @@
         </ul>
       </div>
       <div
-        style="color: green;text-align: center;line-height: 2.5rem;">
+        style="color: #333;text-align: center;line-height: 2.5rem;">
         -&nbsp;{{maps.name}}&nbsp;-
       </div>
       <div style="color: #ddd;position: absolute;right: 0.5rem;line-height: 2.5rem;top:0;">
@@ -45,7 +46,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 8)
+        return Math.floor(this.canvas.height / 6)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -66,7 +67,7 @@
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       },
       distanceX () {
-        return 0.1
+        return 0.01
       },
       distanceY () {
         return this.distanceX * 1.73
@@ -89,11 +90,11 @@
     },
     methods: {
       click (e) {
-        if (!this.isMove()) {
-          this.isClick = true
-          this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
-          this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
-        }
+//        if (!this.isMove()) {
+        this.isClick = true
+        this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
+        this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
+//        }
       },
       nameClick (event) {
         this.showRoleInfo = !this.showRoleInfo
@@ -113,9 +114,9 @@
           this.$router.push('/fight')
         }
       },
-      isMove () {
-        return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
-      },
+//      isMove () {
+//        return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
+//      },
       ableArrive (x, y) {
         if (!this.getMapCellByAxis(x, y)) {
           return false
@@ -125,26 +126,26 @@
         }
         return x <= 1 && (x > -1 || (x === -1 && y === 0)) && y >= -1 && y <= 1
       },
-      startMove (ctx, x, y) {
+      move (ctx, x, y) {
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
           if (this.ableArrive(x, y)) {
-            this.axisPoint.current.x += x
-            this.axisPoint.current.y += y
-            let tx = this.axisPoint.old.x - x
-            let ty = this.axisPoint.old.y - y
-            this.pixelsPoint.offset.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
-//            this.pixelsPoint.offset.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (((this.offset ? ty + 1 : ty) % 2 === 0 ? 0 : this.halfWidth) + this.halfWidth + 1))
-            this.pixelsPoint.offset.y += ty * 1.5 * this.lengthen
-            this.axisPoint.old.x = x
-            this.axisPoint.old.y = y
+//            this.axisPoint.current.x += x
+//            this.axisPoint.current.y += y
+//            let tx = this.axisPoint.old.x - x
+//            let ty = this.axisPoint.old.y - y
+            let tx = this.axisPoint.current.x + x
+            let ty = this.axisPoint.current.y + y
+            this.pixelsPoint.target.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
+            this.pixelsPoint.target.y += ty * 1.5 * this.lengthen
+//            this.axisPoint.old.x = x
+//            this.axisPoint.old.y = y
             this.isClick = false
           }
         }
       },
       axisToPixels (axis) {
         return {
-          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0 && this.isOffset) ? this.halfWidth : -this.halfWidth)),
-//          x: (this.canvas.width >> 1) + axis.x * this.width + ((this.offset ? axis.y + 1 : axis.y) % 2 === 0 ? 0 : this.halfWidth) + this.halfWidth + 1,
+          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0) ? this.halfWidth : -this.halfWidth)),
           y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - (this.lengthen >> 1))
         }
       },
@@ -152,7 +153,7 @@
         let local = this.offset(x, y)
         ctx.beginPath()
         this.drawHexagon(ctx, local.x, local.y)
-        this.startMove(ctx, x, y)
+        this.move(ctx, x, y)
         this.drawText(ctx, local.x, local.y, x, y, cell)
         ctx.closePath()
       },
@@ -168,9 +169,9 @@
       },
       drawText (ctx, px, py, x, y, cell) {
         if (ctx.isPointInPath(this.centerPixels.x - this.pixelsPoint.offset.x, this.centerPixels.y - this.pixelsPoint.offset.y)) {
-          ctx.fillStyle = '#388E8E'
+          ctx.fillStyle = '#ccc'
           ctx.fill()
-          ctx.fillStyle = 'black'
+          ctx.fillStyle = '#666'
           if (cell) {
             ctx.fillText(cell.name, px, py)
           }
@@ -181,47 +182,50 @@
             ctx.fillStyle = '#CAE1FF'
           }
           ctx.fill()
-          ctx.fillStyle = 'black'
+          ctx.fillStyle = '#666'
           ctx.fillText(cell.name, px, py)
         }
       },
       offset (x, y) {
         let pixels = this.axisToPixels({x: x, y: y})
-        if (this.pixelsPoint.offset.x > 0) {
-          this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.offset.x < 0) {
-            this.axisPoint.old.x = 0
+        if (this.pixelsPoint.target.x < this.pixelsPoint.offset.x) {
+          this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+          if (this.pixelsPoint.target.x > -this.pixelsPoint.offset.x) {
+//            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
+            this.pixelsPoint.target.x = 0
+            this.axisPoint.current.x += x
           }
         }
-        if (this.pixelsPoint.offset.x < 0) {
+        if (this.pixelsPoint.offset.x > this.pixelsPoint.offset.x) {
           this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.offset.x > 0) {
-            this.axisPoint.old.x = 0
+          if (this.pixelsPoint.target.x > this.pixelsPoint.offset.x) {
+//            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
+            this.pixelsPoint.target.x = 0
+            this.axisPoint.current.x += x
           }
         }
         if (this.pixelsPoint.offset.y > 0) {
           this.pixelsPoint.offset.y -= this.distanceY
           if (this.pixelsPoint.offset.y < 0) {
-            this.axisPoint.old.y = 0
+//            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
           }
         }
         if (this.pixelsPoint.offset.y < 0) {
           this.pixelsPoint.offset.y += this.distanceY
           if (this.pixelsPoint.offset.y > 0) {
-            this.axisPoint.old.y = 0
+//            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
           }
         }
         return {
-          x: (pixels.x - this.pixelsPoint.offset.x),
+          x: (pixels.x + this.pixelsPoint.offset.x),
           y: (pixels.y - this.pixelsPoint.offset.y)
         }
       },
       getMaps () {
-//        debugger
 //        this.$socket.emit('change', {a: 1})
         let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
         let _this = this
@@ -233,10 +237,6 @@
         ws.onopen = () => {
           ws.send(1)
         }
-//        this.axios.get('/static/data.json').then((response) => {
-//          this.maps.name = response.data.name
-//          this.maps.cells = response.data.cells
-//        })
       },
       getMapCellByAxis (x, y) {
         if (!this.startMapCell) {
@@ -268,7 +268,7 @@
         this.canvas.height = this.canvas.height * ratio
 
         this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
-        this.ctx.strokeStyle = '#388E8E'
+        this.ctx.strokeStyle = '#333'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
         this.ctx.font = ratio + 'em Arial'
@@ -312,7 +312,6 @@
     data () {
       return {
         isClick: false,
-        isOffset: true,
         showRoleInfo: false,
         showNpcOperation: false,
         currentNpc: {},
@@ -324,6 +323,7 @@
         },
         pixelsPoint: {
           offset: {x: 0, y: 0},
+          target: {x: 0, y: 0},
           click: {x: 0, y: 0}
         }
       }
@@ -335,9 +335,9 @@
     position: absolute;
     left: 0;
     right: 0;
-    border-top: solid 0.1rem #388E8E;
-    border-left: solid 0.1rem #388E8E;
-    border-right: solid 0.1rem #388E8E;
+    /*border-top: solid 0.1rem #333;*/
+    /*border-left: solid 0.1rem #333;*/
+    /*border-right: solid 0.1rem #333;*/
   }
 
   .row.header {
@@ -345,8 +345,8 @@
   }
 
   .row.header div.name {
-    border-right: solid 0.1rem #338E8E;
-    color: rgb(221, 221, 221);
+    /*border-right: solid 0.1rem #333;*/
+    color: #666;
     position: absolute;
     left: 0.5rem;
     padding-right: 0.5rem;
@@ -360,18 +360,18 @@
 
   .row.header div.name ul {
     position: absolute;
-    background: black;
+    background: white;
     padding: 0.2rem 0.5rem;
     z-index: 9;
     width: 5rem;
-    border: 0.1rem solid rgb(51, 142, 142);
+    /*border: 0.1rem solid #333;*/
     margin-top: -0.1rem;
     left: -0.5rem;
   }
 
   .row.desc {
     height: 5rem;
-    color: #ddd;
+    color: #666;
     padding: 0 0.5rem;
     font-size: 14px;
     text-indent: 2em;
@@ -392,8 +392,8 @@
   .row.text {
     bottom: 0;
     top: 21.5rem;
-    border-bottom: solid 0.1rem #388E8E;
-    color: #338E8E;
+    /*border-bottom: solid 0.1rem #333;*/
+    color: #666;
     padding: 0.2rem;
     overflow-y: auto;
   }
@@ -401,11 +401,11 @@
   .dialog {
     position: absolute;
     z-index: 999;
-    border: solid 0.1rem #338E8E;
+    border: solid 0.1rem #333;
     width: 8rem;
     height: 10rem;
-    background: black;
-    color: #338E8E;
+    background: white;
+    color: #666;
     left: 50%;
     top: 50%;
     margin-left: -4rem;
