@@ -135,10 +135,13 @@
 //            let ty = this.axisPoint.old.y - y
             let tx = this.axisPoint.current.x + x
             let ty = this.axisPoint.current.y + y
-            this.pixelsPoint.target.x += (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
-            this.pixelsPoint.target.y += ty * 1.5 * this.lengthen
+            this.pixelsPoint.offset.x = (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
+            this.pixelsPoint.offset.y = ty * 1.5 * this.lengthen
+            this.pixelsPoint.target.x += this.pixelsPoint.offset.x
+            this.pixelsPoint.target.y += this.pixelsPoint.offset.y
 //            this.axisPoint.old.x = x
 //            this.axisPoint.old.y = y
+            window.console.info('x:' + (this.axisPoint.current.x + x) + ', y:' + (this.axisPoint.current.y + y))
             this.isClick = false
           }
         }
@@ -188,18 +191,18 @@
       },
       offset (x, y) {
         let pixels = this.axisToPixels({x: x, y: y})
-        if (this.pixelsPoint.target.x < this.pixelsPoint.offset.x) {
+        if (this.pixelsPoint.offset.x < 0) {
           this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.target.x > -this.pixelsPoint.offset.x) {
+          if (this.pixelsPoint.offset.x > 0) {
 //            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
             this.pixelsPoint.target.x = 0
             this.axisPoint.current.x += x
           }
         }
-        if (this.pixelsPoint.offset.x > this.pixelsPoint.offset.x) {
-          this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.target.x > this.pixelsPoint.offset.x) {
+        if (this.pixelsPoint.offset.x > 0) {
+          this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+          if (this.pixelsPoint.offset.x < 0) {
 //            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
             this.pixelsPoint.target.x = 0
@@ -211,6 +214,8 @@
           if (this.pixelsPoint.offset.y < 0) {
 //            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
+            this.pixelsPoint.target.y = 0
+            this.axisPoint.current.y += y
           }
         }
         if (this.pixelsPoint.offset.y < 0) {
@@ -218,11 +223,13 @@
           if (this.pixelsPoint.offset.y > 0) {
 //            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
+            this.pixelsPoint.target.y = 0
+            this.axisPoint.current.y += y
           }
         }
         return {
-          x: (pixels.x + this.pixelsPoint.offset.x),
-          y: (pixels.y - this.pixelsPoint.offset.y)
+          x: (pixels.x + this.pixelsPoint.offset.x - this.pixelsPoint.target.x),
+          y: (pixels.y + this.pixelsPoint.offset.y - this.pixelsPoint.target.y)
         }
       },
       getMaps () {
