@@ -30,12 +30,12 @@
     <div class="row map">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
-    <div class="row npc">
-      <button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
-    </div>
-    <div id="text" class="row text">
-      <div v-for="s in console">{{s}}</div>
-    </div>
+    <!--<div class="row npc">-->
+    <!--<button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>-->
+    <!--</div>-->
+    <!--<div id="text" class="row text">-->
+    <!--<div v-for="s in console">{{s}}</div>-->
+    <!--</div>-->
     <ul class="dialog" v-show="showNpcOperation">
       <li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>
     </ul>
@@ -46,7 +46,7 @@
     name: 'world',
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 6)
+        return Math.floor(this.canvas.height / 8)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -90,6 +90,7 @@
     },
     methods: {
       click (e) {
+        window.console.info(e)
         if (!this.isMove()) {
           this.isClick = true
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
@@ -279,11 +280,9 @@
             }
           }
         } else {
-          this.pixelsPoint.offset.x = 0
-          this.pixelsPoint.target.x = 0
+          this.pixelsPoint.offset = {x: 0, y: 0}
+          this.pixelsPoint.target = {x: 0, y: 0}
           this.axisPoint.current.x += this.axisPoint.click.x
-          this.pixelsPoint.offset.y = 0
-          this.pixelsPoint.target.y = 0
           this.axisPoint.current.y += this.axisPoint.click.y
           this.refresh = true
         }
@@ -300,7 +299,7 @@
         showNpcOperation: false,
         currentNpc: {},
         console: [],
-        maps: {name: '', size: {x: 9, y: 5}, cells: []},
+        maps: {name: '', size: {x: 9, y: 7}, cells: []},
         axisPoint: {
           click: {x: 0, y: 0},
           current: {x: 0, y: 0}
@@ -363,7 +362,7 @@
   }
 
   .row.map {
-    height: 10rem;
+    height: 20rem;
     top: 7.5rem;
   }
 
@@ -406,10 +405,10 @@
     width: 24%;
   }
 
-  canvas {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
+  /*canvas {*/
+  /*-webkit-user-select: none;*/
+  /*-moz-user-select: none;*/
+  /*-ms-user-select: none;*/
+  /*user-select: none;*/
+  /*}*/
 </style>
