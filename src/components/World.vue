@@ -168,7 +168,7 @@
         let tx = this.centerPixels.x + this.pixelsPoint.offset.x
         let ty = this.centerPixels.y + this.pixelsPoint.offset.y
         if (ctx.isPointInPath(tx, ty)) {
-          ctx.fillStyle = '#ccc'
+          ctx.fillStyle = '#7CCD7C'
           ctx.fill()
           ctx.fillStyle = '#666'
           if (cell) {
@@ -190,36 +190,24 @@
         if (this.pixelsPoint.offset.x < 0) {
           this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x > 0) {
-            this.pixelsPoint.offset.x = 0
-            this.pixelsPoint.target.x = 0
-            this.axisPoint.current.x += this.axisPoint.click.x
             this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.x > 0) {
           this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x < 0) {
-            this.pixelsPoint.offset.x = 0
-            this.pixelsPoint.target.x = 0
-            this.axisPoint.current.x += this.axisPoint.click.x
             this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.y > 0) {
           this.pixelsPoint.offset.y -= this.distanceY
           if (this.pixelsPoint.offset.y < 0) {
-            this.pixelsPoint.offset.y = 0
-            this.pixelsPoint.target.y = 0
-            this.axisPoint.current.y += this.axisPoint.click.y
             this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.y < 0) {
           this.pixelsPoint.offset.y += this.distanceY
           if (this.pixelsPoint.offset.y > 0) {
-            this.pixelsPoint.offset.y = 0
-            this.pixelsPoint.target.y = 0
-            this.axisPoint.current.y += this.axisPoint.click.y
             this.refresh = false
           }
         }
@@ -273,7 +261,7 @@
         this.ctx.strokeStyle = '#333'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
-        this.ctx.font = ratio + 'em Arial'
+        this.ctx.font = 0.8 * ratio + 'em Arial'
       }
     },
     mounted () {
@@ -283,13 +271,21 @@
       let startX = Math.floor(this.maps.size.x / 2)
       let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
-        if (this.refresh || !this.refresh) {
+        if (this.refresh) {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
           for (let y = -startY; y < endY; y++) {
             for (let x = -startX; x < endX; x++) {
               this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
             }
           }
+        } else {
+          this.pixelsPoint.offset.x = 0
+          this.pixelsPoint.target.x = 0
+          this.axisPoint.current.x += this.axisPoint.click.x
+          this.pixelsPoint.offset.y = 0
+          this.pixelsPoint.target.y = 0
+          this.axisPoint.current.y += this.axisPoint.click.y
+          this.refresh = true
         }
         window.requestAnimationFrame(fn)
       }
