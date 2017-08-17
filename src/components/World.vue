@@ -67,7 +67,7 @@
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       },
       distanceX () {
-        return 0.01
+        return 0.1
       },
       distanceY () {
         return this.distanceX * 1.73
@@ -129,10 +129,11 @@
       move (ctx, x, y) {
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
           if (this.ableArrive(x, y)) {
-            this.axisPoint.click.x = x
-            this.axisPoint.click.y = y
-            this.pixelsPoint.offset.x = (x * this.width + (y % 2 === 0 ? 1 : -1) * (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -this.halfWidth : this.halfWidth)))
-            this.pixelsPoint.offset.y = y * 1.5 * this.lengthen
+            this.axisPoint.click = {x: x, y: y}
+            this.pixelsPoint.offset = {
+              x: (x * this.width + (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
+              y: y * 1.5 * this.lengthen
+            }
             this.pixelsPoint.target.x += this.pixelsPoint.offset.x
             this.pixelsPoint.target.y += this.pixelsPoint.offset.y
             this.isClick = false
@@ -142,7 +143,7 @@
       axisToPixels (axis) {
         return {
           x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0) ? this.halfWidth : -this.halfWidth)),
-          y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - (this.lengthen >> 1))
+          y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - this.quarterHeight)
         }
       },
       drawMap (ctx, x, y, cell) {
@@ -282,7 +283,7 @@
       let startX = Math.floor(this.maps.size.x / 2)
       let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
-        if (this.refresh) {
+        if (this.refresh || !this.refresh) {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
           for (let y = -startY; y < endY; y++) {
             for (let x = -startX; x < endX; x++) {
