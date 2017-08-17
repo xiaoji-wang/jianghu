@@ -90,11 +90,11 @@
     },
     methods: {
       click (e) {
-//        if (!this.isMove()) {
-        this.isClick = true
-        this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
-        this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
-//        }
+        if (!this.isMove()) {
+          this.isClick = true
+          this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
+          this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
+        }
       },
       nameClick (event) {
         this.showRoleInfo = !this.showRoleInfo
@@ -114,9 +114,9 @@
           this.$router.push('/fight')
         }
       },
-//      isMove () {
-//        return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
-//      },
+      isMove () {
+        return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
+      },
       ableArrive (x, y) {
         if (!this.getMapCellByAxis(x, y)) {
           return false
@@ -129,19 +129,12 @@
       move (ctx, x, y) {
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
           if (this.ableArrive(x, y)) {
-//            this.axisPoint.current.x += x
-//            this.axisPoint.current.y += y
-//            let tx = this.axisPoint.old.x - x
-//            let ty = this.axisPoint.old.y - y
-            let tx = this.axisPoint.current.x + x
-            let ty = this.axisPoint.current.y + y
-            this.pixelsPoint.offset.x = (tx * this.width + (y % 2 === 0 ? 1 : -1) * (ty % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -(this.width >> 1) : (this.width >> 1))))
-            this.pixelsPoint.offset.y = ty * 1.5 * this.lengthen
+            this.axisPoint.click.x = x
+            this.axisPoint.click.y = y
+            this.pixelsPoint.offset.x = (x * this.width + (y % 2 === 0 ? 1 : -1) * (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? -this.halfWidth : this.halfWidth)))
+            this.pixelsPoint.offset.y = y * 1.5 * this.lengthen
             this.pixelsPoint.target.x += this.pixelsPoint.offset.x
             this.pixelsPoint.target.y += this.pixelsPoint.offset.y
-//            this.axisPoint.old.x = x
-//            this.axisPoint.old.y = y
-            window.console.info('x:' + (this.axisPoint.current.x + x) + ', y:' + (this.axisPoint.current.y + y))
             this.isClick = false
           }
         }
@@ -171,7 +164,9 @@
         ctx.stroke()
       },
       drawText (ctx, px, py, x, y, cell) {
-        if (ctx.isPointInPath(this.centerPixels.x - this.pixelsPoint.offset.x, this.centerPixels.y - this.pixelsPoint.offset.y)) {
+        let tx = this.centerPixels.x + this.pixelsPoint.offset.x
+        let ty = this.centerPixels.y + this.pixelsPoint.offset.y
+        if (ctx.isPointInPath(tx, ty)) {
           ctx.fillStyle = '#ccc'
           ctx.fill()
           ctx.fillStyle = '#666'
@@ -179,7 +174,7 @@
             ctx.fillText(cell.name, px, py)
           }
         } else if (cell) {
-          if (this.ableArrive(x, y)) {
+          if (this.ableArrive(x, y) && !this.isMove()) {
             ctx.fillStyle = '#B4EEB4'
           } else {
             ctx.fillStyle = '#CAE1FF'
@@ -194,37 +189,37 @@
         if (this.pixelsPoint.offset.x < 0) {
           this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x > 0) {
-//            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
             this.pixelsPoint.target.x = 0
-            this.axisPoint.current.x += x
+            this.axisPoint.current.x += this.axisPoint.click.x
+            this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.x > 0) {
           this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
           if (this.pixelsPoint.offset.x < 0) {
-//            this.axisPoint.old.x = 0
             this.pixelsPoint.offset.x = 0
             this.pixelsPoint.target.x = 0
-            this.axisPoint.current.x += x
+            this.axisPoint.current.x += this.axisPoint.click.x
+            this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.y > 0) {
           this.pixelsPoint.offset.y -= this.distanceY
           if (this.pixelsPoint.offset.y < 0) {
-//            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
             this.pixelsPoint.target.y = 0
-            this.axisPoint.current.y += y
+            this.axisPoint.current.y += this.axisPoint.click.y
+            this.refresh = false
           }
         }
         if (this.pixelsPoint.offset.y < 0) {
           this.pixelsPoint.offset.y += this.distanceY
           if (this.pixelsPoint.offset.y > 0) {
-//            this.axisPoint.old.y = 0
             this.pixelsPoint.offset.y = 0
             this.pixelsPoint.target.y = 0
-            this.axisPoint.current.y += y
+            this.axisPoint.current.y += this.axisPoint.click.y
+            this.refresh = false
           }
         }
         return {
@@ -233,7 +228,6 @@
         }
       },
       getMaps () {
-//        this.$socket.emit('change', {a: 1})
         let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
         let _this = this
         ws.onmessage = (e) => {
@@ -281,23 +275,6 @@
         this.ctx.font = ratio + 'em Arial'
       }
     },
-    socket: {
-//      namespace: '/jianghu',
-      events: {
-        changed (msg) {
-          window.console.log('Something changed: ' + msg)
-        },
-        connect () {
-          window.console.log('Websocket connected to ' + this.$socket.nsp)
-        },
-        disconnect () {
-          window.console.log('Websocket disconnected from ' + this.$socket.nsp)
-        },
-        error (err) {
-          window.console.error('Websocket error!', err)
-        }
-      }
-    },
     mounted () {
       this.initCanvas()
       let startY = Math.floor(this.maps.size.y / 2)
@@ -305,10 +282,12 @@
       let startX = Math.floor(this.maps.size.x / 2)
       let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        for (let y = -startY; y < endY; y++) {
-          for (let x = -startX; x < endX; x++) {
-            this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
+        if (this.refresh) {
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+          for (let y = -startY; y < endY; y++) {
+            for (let x = -startX; x < endX; x++) {
+              this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
+            }
           }
         }
         window.requestAnimationFrame(fn)
@@ -318,6 +297,7 @@
     },
     data () {
       return {
+        refresh: true,
         isClick: false,
         showRoleInfo: false,
         showNpcOperation: false,
@@ -325,7 +305,7 @@
         console: [],
         maps: {name: '', size: {x: 9, y: 5}, cells: []},
         axisPoint: {
-          old: {x: 0, y: 0},
+          click: {x: 0, y: 0},
           current: {x: 0, y: 0}
         },
         pixelsPoint: {
