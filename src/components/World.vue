@@ -30,9 +30,9 @@
     <div class="row map">
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
-    <!--<div class="row npc">-->
-    <!--<button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>-->
-    <!--</div>-->
+    <div class="row npc">
+      <button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
+    </div>
     <!--<div id="text" class="row text">-->
     <!--<div v-for="s in console">{{s}}</div>-->
     <!--</div>-->
@@ -218,7 +218,8 @@
         }
       },
       getMaps () {
-        let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
+//        let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
+        let ws = new window.WebSocket('ws://127.0.0.1:8270/jianghu')
         let _this = this
         ws.onmessage = (e) => {
           let jsonData = JSON.parse(e.data)
@@ -368,7 +369,7 @@
 
   .row.npc {
     height: 4rem;
-    top: 17.5rem;
+    top: 28rem;
     padding-right: 1%;
   }
 
