@@ -90,7 +90,6 @@
     },
     methods: {
       click (e) {
-        window.console.info(e)
         if (!this.isMove()) {
           this.isClick = true
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
