@@ -31,14 +31,15 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <button v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
+      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
     </div>
-    <!--<div id="text" class="row text">-->
-    <!--<div v-for="s in console">{{s}}</div>-->
-    <!--</div>-->
+    <div id="text" class="row text">
+      <div v-for="s in console">{{s}}</div>
+    </div>
     <ul class="dialog" v-show="showNpcOperation">
       <li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>
     </ul>
+    <div class="dialog_mask" v-show="showNpcOperation"></div>
   </div>
 </template>
 <script>
@@ -174,7 +175,7 @@
           if (cell) {
             ctx.fillText(cell.name, px, py)
           }
-        } else if (cell) {
+        } else if (y < 3 && y > -3 && cell) {
           if (this.ableArrive(x, y) && !this.isMove()) {
             ctx.fillStyle = '#B4EEB4'
           } else {
@@ -298,8 +299,8 @@
         showRoleInfo: false,
         showNpcOperation: false,
         currentNpc: {},
-        console: [],
-        maps: {name: '', size: {x: 9, y: 7}, cells: []},
+        console: ['文字'],
+        maps: {name: '', size: {x: 7, y: 7}, cells: []},
         axisPoint: {
           click: {x: 0, y: 0},
           current: {x: 0, y: 0}
@@ -318,9 +319,6 @@
     position: absolute;
     left: 0;
     right: 0;
-    /*border-top: solid 0.1rem #333;*/
-    /*border-left: solid 0.1rem #333;*/
-    /*border-right: solid 0.1rem #333;*/
   }
 
   .row.header {
@@ -328,7 +326,6 @@
   }
 
   .row.header div.name {
-    /*border-right: solid 0.1rem #333;*/
     color: #666;
     position: absolute;
     left: 0.5rem;
@@ -347,7 +344,6 @@
     padding: 0.2rem 0.5rem;
     z-index: 9;
     width: 5rem;
-    /*border: 0.1rem solid #333;*/
     margin-top: -0.1rem;
     left: -0.5rem;
   }
@@ -362,37 +358,47 @@
   }
 
   .row.map {
-    height: 20rem;
+    height: 18rem;
     top: 7.5rem;
   }
 
   .row.npc {
     height: 4rem;
-    top: 28rem;
+    top: 26rem;
     padding-right: 1%;
   }
 
   .row.text {
     bottom: 0;
-    top: 21.5rem;
-    /*border-bottom: solid 0.1rem #333;*/
-    color: #666;
+    top: 28.5rem;
+    color: #333;
     padding: 0.2rem;
     overflow-y: auto;
+    background: rgba(0, 0, 0, 0.3);
   }
 
   .dialog {
     position: absolute;
     z-index: 999;
-    border: solid 0.1rem #333;
+    border-radius: 1rem;
+    border: solid 0.01rem #333;
     width: 8rem;
     height: 10rem;
     background: white;
     color: #666;
     left: 50%;
-    top: 50%;
+    top: 40%;
     margin-left: -4rem;
     margin-top: -5rem;
+  }
+
+  .dialog_mask {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
   }
 
   .dialog li {
@@ -401,8 +407,18 @@
   }
 
   button {
+    outline: none;
     margin: 0.2rem 0 0 1%;
     width: 24%;
+    background: wheat;
+    color: #333;
+    padding: 0.3rem;
+    border-radius: 1rem;
+    border: solid 0.01rem #333;
+  }
+
+  button:active{
+    background: #FAEBD7;
   }
 
   /*canvas {*/
