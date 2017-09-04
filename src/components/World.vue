@@ -36,9 +36,17 @@
     <div id="text" class="row text">
       <div v-for="s in console">{{s}}</div>
     </div>
-    <ul class="dialog" v-show="showNpcOperation">
-      <li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>
-    </ul>
+    <div class="dialog" v-show="showNpcOperation">
+      <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
+      <p class="name">{{currentNpc.name}}</p>
+      <p class="desc">伙计看起来约20多岁。武艺看起来不堪一击。出手似乎很轻。眉清目秀的小伙, 似乎从来没有烦恼.</p>
+      <p class="action">
+        <button>交谈</button>
+      </p>
+      <p class="action">
+        <button>交易</button>
+      </p>
+    </div>
     <div class="dialog_mask" v-show="showNpcOperation"></div>
   </div>
 </template>
@@ -378,18 +386,17 @@
   }
 
   .dialog {
+    background: url(/static/image/bg.jpg);
     position: absolute;
     z-index: 999;
     border-radius: 1rem;
     border: solid 0.01rem #333;
-    width: 8rem;
-    height: 10rem;
+    height: 18.5rem;
     background: white;
     color: #666;
-    left: 50%;
-    top: 40%;
-    margin-left: -4rem;
-    margin-top: -5rem;
+    left: 3rem;
+    top: 5.5rem;
+    right: 3rem;
   }
 
   .dialog_mask {
@@ -401,9 +408,23 @@
     background: rgba(0, 0, 0, 0.4);
   }
 
-  .dialog li {
+  .dialog p.name {
     text-align: center;
-    padding: 0.5rem;
+    line-height: 3rem;
+  }
+
+  .dialog p.desc {
+    text-indent: 2em;
+    padding: 0 0.8rem;
+  }
+
+  .dialog p.action{
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+
+  .dialog p.action button{
+    width: 30%;
   }
 
   button {
@@ -417,7 +438,7 @@
     border: solid 0.01rem #333;
   }
 
-  button:active{
+  button:active {
     background: #FAEBD7;
   }
 
