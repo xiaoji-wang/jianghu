@@ -39,7 +39,7 @@
     <div class="dialog" v-show="showNpcOperation">
       <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
       <p class="name">{{currentNpc.name}}</p>
-      <p class="desc">伙计看起来约20多岁。武艺看起来不堪一击。出手似乎很轻。眉清目秀的小伙, 似乎从来没有烦恼.</p>
+      <p class="desc">{{currentNpc.desc}}</p>
       <p class="action">
         <button>交谈</button>
       </p>
@@ -110,8 +110,10 @@
         event.cancelBubble = true
       },
       npcClick (event, npc) {
-        this.currentNpc = npc
-        this.showNpcOperation = !this.showNpcOperation
+        this.$ws(this.$action.NPC_SELECTED, {id: npc.id}, (data) => {
+          this.currentNpc = data
+          this.showNpcOperation = !this.showNpcOperation
+        })
         event.cancelBubble = true
       },
       npcOperationClick (operation) {
@@ -183,7 +185,7 @@
           if (cell) {
             ctx.fillText(cell.name, px, py)
           }
-        } else if (y < 3 && y > -3 && cell) {
+        } else if (cell) {
           if (this.ableArrive(x, y) && !this.isMove()) {
             ctx.fillStyle = '#B4EEB4'
           } else {
@@ -226,17 +228,10 @@
         }
       },
       getMaps () {
-//        let ws = new window.WebSocket('ws://114.215.97.130:8270/jianghu')
-        let ws = new window.WebSocket('ws://127.0.0.1:8270/jianghu')
-        let _this = this
-        ws.onmessage = (e) => {
-          let jsonData = JSON.parse(e.data)
-          _this.maps.name = jsonData.name
-          _this.maps.cells = jsonData.cells
-        }
-        ws.onopen = () => {
-          ws.send(1)
-        }
+        this.$ws(this.$action.GET_MAP, {}, (data) => {
+          this.maps.name = data.name
+          this.maps.cells = data.cells
+        })
       },
       getMapCellByAxis (x, y) {
         if (!this.startMapCell) {
@@ -392,7 +387,6 @@
     border-radius: 1rem;
     border: solid 0.01rem #333;
     height: 18.5rem;
-    background: white;
     color: #666;
     left: 3rem;
     top: 5.5rem;
@@ -418,12 +412,12 @@
     padding: 0 0.8rem;
   }
 
-  .dialog p.action{
+  .dialog p.action {
     text-align: center;
     margin: 0.5rem 0;
   }
 
-  .dialog p.action button{
+  .dialog p.action button {
     width: 30%;
   }
 

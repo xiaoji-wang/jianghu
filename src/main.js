@@ -3,8 +3,17 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import socket from './socket'
 
 Vue.config.productionTip = false
+
+// Vue.use(socket, {url: 'ws://114.215.97.130:8270/jianghu'})
+Vue.use(socket, {url: 'ws://127.0.0.1:8270/jianghu'})
+
+Vue.prototype.$action = {
+  GET_MAP: 1,
+  NPC_SELECTED: 2
+}
 
 /* eslint-disable no-new */
 new Vue({
