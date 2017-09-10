@@ -1,0 +1,133 @@
+.row {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.row.header {
+  height: 3rem;
+}
+
+.row.header div.name {
+  color: #666;
+  position: absolute;
+  left: 0.5rem;
+  padding-right: 0.5rem;
+  line-height: 2.5rem;
+  outline: none;
+}
+
+.row.header div.name:hover ul {
+  visibility: visible;
+}
+
+.row.header div.name ul {
+  position: absolute;
+  background: white;
+  padding: 0.2rem 0.5rem;
+  z-index: 9;
+  width: 5rem;
+  margin-top: -0.1rem;
+  left: -0.5rem;
+}
+
+.row.desc {
+  height: 5rem;
+  color: #666;
+  padding: 0 0.5rem;
+  font-size: 14px;
+  text-indent: 2em;
+  top: 2.5rem;
+}
+
+.row.map {
+  height: 12rem;
+  top: 7.5rem;
+}
+
+.row.npc {
+  height: 4rem;
+  top: 20rem;
+  padding-right: 1%;
+}
+
+.row.text {
+  font-size: 0.8em;
+  bottom: 0;
+  top: 24.5rem;
+  color: #333;
+  padding: 0.2rem;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dialog {
+  background: url(/static/image/bg.jpg);
+  position: absolute;
+  z-index: 999;
+  /*border-radius: 1rem;*/
+  border: solid 0.01rem #333;
+  height: 24.5rem;
+  color: #666;
+  left: 0;
+  top: 0;
+  right: 0;
+}
+
+/*.dialog_mask {*/
+  /*position: fixed;*/
+  /*left: 0;*/
+  /*top: 0;*/
+  /*right: 0;*/
+  /*bottom: 0;*/
+  /*background: rgba(0, 0, 0, 0.4);*/
+/*}*/
+
+.dialog p.name {
+  text-align: center;
+  line-height: 3rem;
+}
+
+.dialog p.desc {
+  text-indent: 2em;
+  padding: 0 0.8rem;
+}
+
+.dialog p.action {
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.dialog p.action button {
+  width: 30%;
+}
+
+button {
+  outline: none;
+  margin: 0.2rem 0 0 1%;
+  width: 24%;
+  background: wheat;
+  color: #333;
+  padding: 0.3rem;
+  /*border-radius: 0.5rem;*/
+  border: solid 0.01rem #333;
+}
+
+button:active {
+  background: #FAEBD7;
+}
+
+canvas {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/*.fade-enter-active, .fade-leave-active {*/
+  /*transition: opacity .5s*/
+/*}*/
+
+/*.fade-enter, .fade-leave-to !* .fade-leave-active in below version 2.1.8 *! {*/
+  /*opacity: 0*/
+/*}*/

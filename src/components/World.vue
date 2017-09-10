@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;background: url('/static/image/bg.jpg');position: relative;"
-       @click="showRoleInfo=false;showNpcOperation=false">
+       @click="showRoleInfo = false">
     <div class="row header">
       <div class="name" @click="nameClick($event)">
         王大明
@@ -31,31 +31,58 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="npcClick($event,n)">{{n.name}}</button>
+      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="npcClick(n)">{{n.name}}</button>
     </div>
-    <div id="text" class="row text">
-      <div v-for="s in console">{{s}}</div>
+    <div class="row text" @click="showNpcOperation=false">
+      <div v-for="s in console">{{s.name}}:{{s.word}}</div>
     </div>
-    <div class="dialog" v-show="showNpcOperation">
-      <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
-      <p class="name">{{currentNpc.name}}</p>
-      <p class="desc">{{currentNpc.desc}}</p>
-      <p class="action">
-        <button>交谈</button>
-      </p>
-      <p class="action">
-        <button>交易</button>
-      </p>
-    </div>
-    <div class="dialog_mask" v-show="showNpcOperation"></div>
+    <transition
+      name="custom-classes-transition"
+      enter-active-class="animated tada"
+      leave-active-class="animated bounceOutRight"
+    >
+      <div class="dialog" v-show="showNpcOperation">
+        <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
+        <p class="name">{{currentNpc.name}}</p>
+        <p class="desc">{{currentNpc.desc}}</p>
+        <p class="action">
+          <button @click="npcTalk(currentNpc.id,currentNpc.name)">交谈</button>
+        </p>
+        <p class="action">
+          <button>交易</button>
+        </p>
+      </div>
+    </transition>
+    <!--<div class="dialog_mask" v-show="showNpcOperation" @click="showNpcOperation=false"></div>-->
   </div>
 </template>
+<!--<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">-->
 <script>
   export default {
     name: 'world',
+    data () {
+      return {
+        refresh: true,
+        isClick: false,
+        showRoleInfo: false,
+        showNpcOperation: false,
+        currentNpc: {},
+        console: [],
+        maps: {name: '', size: {x: 7, y: 5}, cells: []},
+        axisPoint: {
+          click: {x: 0, y: 0},
+          current: {x: 0, y: 0}
+        },
+        pixelsPoint: {
+          offset: {x: 0, y: 0},
+          target: {x: 0, y: 0},
+          click: {x: 0, y: 0}
+        }
+      }
+    },
     computed: {
       lengthen () {
-        return Math.floor(this.canvas.height / 8)
+        return Math.floor(this.canvas.height / 5)
       },
       quarterHeight () {
         return this.lengthen >> 1
@@ -76,7 +103,7 @@
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       },
       distanceX () {
-        return 0.1
+        return 10
       },
       distanceY () {
         return this.distanceX * 1.73
@@ -109,22 +136,27 @@
         this.showRoleInfo = !this.showRoleInfo
         event.cancelBubble = true
       },
-      npcClick (event, npc) {
+      npcClick (npc) {
         this.$ws(this.$action.NPC_SELECTED, {id: npc.id}, (data) => {
           this.currentNpc = data
           this.showNpcOperation = !this.showNpcOperation
         })
-        event.cancelBubble = true
       },
-      npcOperationClick (operation) {
-        if (operation.type === 'print') {
-          this.console.push(operation.params)
-          let div = document.getElementById('text')
-          div.scrollTop = div.scrollHeight
-        } else if (operation.type === 'fight') {
-          this.$router.push('/fight')
-        }
+      npcTalk (id, name) {
+        this.$ws(this.$action.NPC_TALK, {id: id}, (data) => {
+          data.name = name
+          this.console.push(data)
+        })
       },
+//      npcOperationClick (operation) {
+//        if (operation.type === 'print') {
+//          this.console.push(operation.params)
+//          let div = document.getElementById('text')
+//          div.scrollTop = div.scrollHeight
+//        } else if (operation.type === 'fight') {
+//          this.$router.push('/fight')
+//        }
+//      },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
       },
@@ -179,18 +211,18 @@
         let tx = this.centerPixels.x + this.pixelsPoint.offset.x
         let ty = this.centerPixels.y + this.pixelsPoint.offset.y
         if (ctx.isPointInPath(tx, ty)) {
-          ctx.fillStyle = '#7CCD7C'
+          ctx.fillStyle = '#8FBFFF'
           ctx.fill()
           ctx.fillStyle = '#666'
           if (cell) {
             ctx.fillText(cell.name, px, py)
           }
         } else if (cell) {
-          if (this.ableArrive(x, y) && !this.isMove()) {
-            ctx.fillStyle = '#B4EEB4'
-          } else {
-            ctx.fillStyle = '#CAE1FF'
-          }
+//          if (this.ableArrive(x, y) && !this.isMove()) {
+//            ctx.fillStyle = '#CCFFFF'
+//          } else {
+          ctx.fillStyle = '#CAE1FF'
+//          }
           ctx.fill()
           ctx.fillStyle = '#666'
           ctx.fillText(cell.name, px, py)
@@ -198,30 +230,6 @@
       },
       offset (x, y) {
         let pixels = this.axisToPixels({x: x, y: y})
-        if (this.pixelsPoint.offset.x < 0) {
-          this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.offset.x > 0) {
-            this.refresh = false
-          }
-        }
-        if (this.pixelsPoint.offset.x > 0) {
-          this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-          if (this.pixelsPoint.offset.x < 0) {
-            this.refresh = false
-          }
-        }
-        if (this.pixelsPoint.offset.y > 0) {
-          this.pixelsPoint.offset.y -= this.distanceY
-          if (this.pixelsPoint.offset.y < 0) {
-            this.refresh = false
-          }
-        }
-        if (this.pixelsPoint.offset.y < 0) {
-          this.pixelsPoint.offset.y += this.distanceY
-          if (this.pixelsPoint.offset.y > 0) {
-            this.refresh = false
-          }
-        }
         return {
           x: (pixels.x + this.pixelsPoint.offset.x - this.pixelsPoint.target.x),
           y: (pixels.y + this.pixelsPoint.offset.y - this.pixelsPoint.target.y)
@@ -277,6 +285,34 @@
       let endX = Math.ceil(this.maps.size.x / 2)
       let fn = () => {
         if (this.refresh) {
+          if (this.pixelsPoint.offset.x < 0) {
+            this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+            if (this.pixelsPoint.offset.x > 0) {
+              this.pixelsPoint.offset.x = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.x > 0) {
+            this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+            if (this.pixelsPoint.offset.x < 0) {
+              this.pixelsPoint.offset.x = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.y > 0) {
+            this.pixelsPoint.offset.y -= this.distanceY
+            if (this.pixelsPoint.offset.y < 0) {
+              this.pixelsPoint.offset.y = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.y < 0) {
+            this.pixelsPoint.offset.y += this.distanceY
+            if (this.pixelsPoint.offset.y > 0) {
+              this.pixelsPoint.offset.y = 0
+              this.refresh = false
+            }
+          }
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
           for (let y = -startY; y < endY; y++) {
             for (let x = -startX; x < endX; x++) {
@@ -295,151 +331,16 @@
       fn()
       this.getMaps()
     },
-    data () {
-      return {
-        refresh: true,
-        isClick: false,
-        showRoleInfo: false,
-        showNpcOperation: false,
-        currentNpc: {},
-        console: ['文字'],
-        maps: {name: '', size: {x: 7, y: 7}, cells: []},
-        axisPoint: {
-          click: {x: 0, y: 0},
-          current: {x: 0, y: 0}
-        },
-        pixelsPoint: {
-          offset: {x: 0, y: 0},
-          target: {x: 0, y: 0},
-          click: {x: 0, y: 0}
-        }
+    watch: {
+      console (v1, v2) {
+        this.$nextTick(() => {
+          let talks = document.getElementsByClassName('row text')[0]
+          talks.scrollTop = talks.scrollHeight
+        })
       }
     }
   }
 </script>
 <style scoped>
-  .row {
-    position: absolute;
-    left: 0;
-    right: 0;
-  }
-
-  .row.header {
-    height: 3rem;
-  }
-
-  .row.header div.name {
-    color: #666;
-    position: absolute;
-    left: 0.5rem;
-    padding-right: 0.5rem;
-    line-height: 2.5rem;
-    outline: none;
-  }
-
-  .row.header div.name:hover ul {
-    visibility: visible;
-  }
-
-  .row.header div.name ul {
-    position: absolute;
-    background: white;
-    padding: 0.2rem 0.5rem;
-    z-index: 9;
-    width: 5rem;
-    margin-top: -0.1rem;
-    left: -0.5rem;
-  }
-
-  .row.desc {
-    height: 5rem;
-    color: #666;
-    padding: 0 0.5rem;
-    font-size: 14px;
-    text-indent: 2em;
-    top: 2.5rem;
-  }
-
-  .row.map {
-    height: 18rem;
-    top: 7.5rem;
-  }
-
-  .row.npc {
-    height: 4rem;
-    top: 26rem;
-    padding-right: 1%;
-  }
-
-  .row.text {
-    bottom: 0;
-    top: 28.5rem;
-    color: #333;
-    padding: 0.2rem;
-    overflow-y: auto;
-    background: rgba(0, 0, 0, 0.3);
-  }
-
-  .dialog {
-    background: url(/static/image/bg.jpg);
-    position: absolute;
-    z-index: 999;
-    border-radius: 1rem;
-    border: solid 0.01rem #333;
-    height: 18.5rem;
-    color: #666;
-    left: 3rem;
-    top: 5.5rem;
-    right: 3rem;
-  }
-
-  .dialog_mask {
-    position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-  }
-
-  .dialog p.name {
-    text-align: center;
-    line-height: 3rem;
-  }
-
-  .dialog p.desc {
-    text-indent: 2em;
-    padding: 0 0.8rem;
-  }
-
-  .dialog p.action {
-    text-align: center;
-    margin: 0.5rem 0;
-  }
-
-  .dialog p.action button {
-    width: 30%;
-  }
-
-  button {
-    outline: none;
-    margin: 0.2rem 0 0 1%;
-    width: 24%;
-    background: wheat;
-    color: #333;
-    padding: 0.3rem;
-    border-radius: 1rem;
-    border: solid 0.01rem #333;
-  }
-
-  button:active {
-    background: #FAEBD7;
-  }
-
-  /*canvas {*/
-  /*-webkit-user-select: none;*/
-  /*-moz-user-select: none;*/
-  /*-ms-user-select: none;*/
-  /*user-select: none;*/
-  /*}*/
+  @import "css/world.css";
 </style>
