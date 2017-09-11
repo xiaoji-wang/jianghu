@@ -37,10 +37,9 @@
       <div v-for="s in console">{{s.name}}:{{s.word}}</div>
     </div>
     <transition
-      name="custom-classes-transition"
-      enter-active-class="animated tada"
-      leave-active-class="animated bounceOutRight"
-    >
+      name="bounce"
+      enter-active-class="animated bounceInDown"
+      leave-active-class="animated bounceOutUp">
       <div class="dialog" v-show="showNpcOperation">
         <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
         <p class="name">{{currentNpc.name}}</p>
