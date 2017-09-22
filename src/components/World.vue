@@ -109,9 +109,12 @@
       },
       startMapCell () {
         for (let i = 0; i < this.maps.cells.length; i++) {
-          if (this.maps.cells[i].startPoint) {
+          if (this.maps.cells[i].x === 5 && this.maps.cells[i].y === 4) {
             return this.maps.cells[i]
           }
+//          if (this.maps.cells[i].startPoint) {
+//            return this.maps.cells[i]
+//          }
         }
         return null
       },

@@ -116,24 +116,3 @@ button {
 button:active {
   background: #FAEBD7;
 }
-
-canvas {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.custom-classes-transition {
-  animate-duration: 2s;
-  animate-delay: 1s;
-  animate-iteration-count: 2;
-}
-
-/*.fade-enter-active, .fade-leave-active {*/
-/*transition: opacity .5s*/
-/*}*/
-
-/*.fade-enter, .fade-leave-to !* .fade-leave-active in below version 2.1.8 *! {*/
-/*opacity: 0*/
-/*}*/
