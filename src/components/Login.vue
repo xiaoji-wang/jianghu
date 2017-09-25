@@ -1,15 +1,22 @@
 <template>
   <div style="height: 100%;background: black;position: relative;">
-    <router-link to="/world">步入江湖</router-link>
+    <!--<router-link to="/world">步入江湖</router-link>-->
+    <button @click="a">步入江湖</button>
   </div>
 </template>
 
 <script>
+  import {a} from './js/test'
   export default {
     name: 'login',
     data () {
       return {
         msg: ''
+      }
+    },
+    methods: {
+      a1 () {
+        a()
       }
     }
   }
@@ -25,7 +32,7 @@
     color: white;
     width: 6rem;
     margin: 0 auto;
-    top:30%;
+    top: 30%;
     position: relative;
     background: #338E8E;
   }

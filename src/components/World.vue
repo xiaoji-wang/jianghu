@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="row desc">
-      {{currentCell.desc}}
+      {{currentCell.description}}
     </div>
     <div class="row map">
       <canvas id="canvas" @click="click($event)"></canvas>
@@ -43,7 +43,7 @@
       <div class="dialog" v-show="showNpcOperation">
         <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
         <p class="name">{{currentNpc.name}}</p>
-        <p class="desc">{{currentNpc.desc}}</p>
+        <p class="desc">{{currentNpc.description}}</p>
         <p class="action">
           <button @click="npcTalk(currentNpc.id,currentNpc.name)">交谈</button>
         </p>
@@ -67,7 +67,7 @@
         showNpcOperation: false,
         currentNpc: {},
         console: [],
-        maps: {name: '', size: {x: 7, y: 5}, cells: []},
+        maps: {name: '', size: {x: 8, y: 6}, cells: []},
         axisPoint: {
           click: {x: 0, y: 0},
           current: {x: 0, y: 0}
@@ -132,7 +132,13 @@
           this.isClick = true
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
           this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
+          this.$ws(this.$action.SELECTED_MAP, {id: this.currentCell.scene_cell_id}, (data) => {
+            this.currentCell.npc = data
+          })
         }
+//        if (!this.currentCell.npcs && this.currentCell.scene_cell_id) {
+
+//        }
       },
       nameClick (event) {
         this.showRoleInfo = !this.showRoleInfo
@@ -171,9 +177,9 @@
         }
         return x <= 1 && (x > -1 || (x === -1 && y === 0)) && y >= -1 && y <= 1
       },
-      move (ctx, x, y) {
+      move (ctx, x, y, cell) {
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
-          if (this.ableArrive(x, y)) {
+          if (cell.arrive && this.ableArrive(x, y)) {
             this.axisPoint.click = {x: x, y: y}
             this.pixelsPoint.offset = {
               x: (x * this.width + (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
@@ -195,7 +201,7 @@
         let local = this.offset(x, y)
         ctx.beginPath()
         this.drawHexagon(ctx, local.x, local.y)
-        this.move(ctx, x, y)
+        this.move(ctx, x, y, cell)
         this.drawText(ctx, local.x, local.y, x, y, cell)
         ctx.closePath()
       },
@@ -213,7 +219,7 @@
         let tx = this.centerPixels.x + this.pixelsPoint.offset.x
         let ty = this.centerPixels.y + this.pixelsPoint.offset.y
         if (ctx.isPointInPath(tx, ty)) {
-          ctx.fillStyle = '#8FBFFF'
+          ctx.fillStyle = '#CCFFFF'
           ctx.fill()
           ctx.fillStyle = '#666'
           if (cell) {
@@ -221,10 +227,11 @@
           }
         } else if (cell) {
 //          if (this.ableArrive(x, y) && !this.isMove()) {
-//            ctx.fillStyle = '#CCFFFF'
-//          } else {
-          ctx.fillStyle = '#CAE1FF'
-//          }
+          if (cell.arrive) {
+            ctx.fillStyle = '#FFF'
+          } else {
+            ctx.fillStyle = '#CAE1FF'
+          }
           ctx.fill()
           ctx.fillStyle = '#666'
           ctx.fillText(cell.name, px, py)
@@ -240,6 +247,9 @@
       getMaps () {
         this.$ws(this.$action.GET_MAP, {}, (data) => {
           this.maps.name = data.name
+          data.cells.forEach((c) => {
+            c.npcs = []
+          })
           this.maps.cells = data.cells
         })
       },
@@ -249,7 +259,7 @@
         }
         for (let i = 0; i < this.maps.cells.length; i++) {
           let cell = this.maps.cells[i]
-          if (cell.axisPoint.x === this.axisPoint.current.x + this.startMapCell.axisPoint.x + x && cell.axisPoint.y === this.axisPoint.current.y + this.startMapCell.axisPoint.y + y) {
+          if (cell.x === this.axisPoint.current.x + this.startMapCell.x + x && cell.y === this.axisPoint.current.y + this.startMapCell.y + y) {
             return cell
           }
         }
@@ -316,8 +326,8 @@
             }
           }
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-          for (let y = -startY; y < endY; y++) {
-            for (let x = -startX; x < endX; x++) {
+          for (let y = -startY; y <= endY; y++) {
+            for (let x = -startX; x <= endX; x++) {
               this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
             }
           }
