@@ -1,12 +1,12 @@
 <template>
   <div style="height: 100%;background: black;position: relative;">
     <!--<router-link to="/world">步入江湖</router-link>-->
-    <button @click="a">步入江湖</button>
+    <a @click="enter">步入江湖</a>
   </div>
 </template>
 
 <script>
-  import {a} from './js/test'
+  //  import {a} from './js/test'
   export default {
     name: 'login',
     data () {
@@ -15,8 +15,8 @@
       }
     },
     methods: {
-      a1 () {
-        a()
+      enter () {
+        this.$router.push('/world')
       }
     }
   }

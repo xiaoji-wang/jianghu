@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%;background: url('/static/image/bg.jpg');position: relative;"
+  <div style="height: 100%;background: #000;position: relative;"
        @click="showRoleInfo = false">
     <div class="row header">
       <div class="name" @click="nameClick($event)">
@@ -31,7 +31,7 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="npcClick(n)">{{n.name}}</button>
+      <button v-if="!!n.name" v-for="n in npcs" @click="npcClick(n)">{{n.name}}</button>
     </div>
     <div class="row text" @click="showNpcOperation=false">
       <div v-for="s in console">{{s.name}}:{{s.word}}</div>
@@ -57,6 +57,7 @@
 </template>
 <!--<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">-->
 <script>
+  import {action} from './js/constant'
   export default {
     name: 'world',
     data () {
@@ -66,6 +67,7 @@
         showRoleInfo: false,
         showNpcOperation: false,
         currentNpc: {},
+        npcs: [],
         console: [],
         maps: {name: '', size: {x: 8, y: 6}, cells: []},
         axisPoint: {
@@ -107,17 +109,17 @@
       distanceY () {
         return this.distanceX * 1.73
       },
-      startMapCell () {
-        for (let i = 0; i < this.maps.cells.length; i++) {
-          if (this.maps.cells[i].x === 5 && this.maps.cells[i].y === 4) {
-            return this.maps.cells[i]
-          }
+//      startMapCell () {
+//        for (let i = 0; i < this.maps.cells.length; i++) {
+//        if (this.maps.cells.length > 0) {
+//          return this.maps.cells[6][7]
+//        }
 //          if (this.maps.cells[i].startPoint) {
 //            return this.maps.cells[i]
 //          }
-        }
-        return null
-      },
+//        }
+//        return null
+//      },
       currentCell () {
         let center = this.getMapCellByAxis(0, 0)
         if (center) {
@@ -132,26 +134,25 @@
           this.isClick = true
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
           this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
-          this.$ws(this.$action.SELECTED_MAP, {id: this.currentCell.scene_cell_id}, (data) => {
-            this.currentCell.npc = data
-          })
         }
-//        if (!this.currentCell.npcs && this.currentCell.scene_cell_id) {
-
-//        }
       },
       nameClick (event) {
         this.showRoleInfo = !this.showRoleInfo
         event.cancelBubble = true
       },
+      loadNpc (id) {
+        this.$ws(action.SELECTED_MAP, {id: id}, (data) => {
+          this.npcs = data
+        })
+      },
       npcClick (npc) {
-        this.$ws(this.$action.NPC_SELECTED, {id: npc.id}, (data) => {
+        this.$ws(action.NPC_SELECTED, {id: npc.id}, (data) => {
           this.currentNpc = data
           this.showNpcOperation = !this.showNpcOperation
         })
       },
       npcTalk (id, name) {
-        this.$ws(this.$action.NPC_TALK, {id: id}, (data) => {
+        this.$ws(action.NPC_TALK, {id: id}, (data) => {
           data.name = name
           this.console.push(data)
         })
@@ -169,17 +170,33 @@
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
       },
       ableArrive (x, y) {
-        if (!this.getMapCellByAxis(x, y)) {
+        let cell = this.getMapCellByAxis(x, y)
+        if (!cell) {
           return false
         }
-        if (this.axisPoint.current.y % 2 === 0) {
-          return x >= -1 && (x < 1 || (x === 1 && y === 0)) && y >= -1 && y <= 1
+        if (this.currentCell.east_out && this.currentCell.east_id === cell.scene_cell_id) {
+          return true
         }
-        return x <= 1 && (x > -1 || (x === -1 && y === 0)) && y >= -1 && y <= 1
+        if (this.currentCell.south_east_out && this.currentCell.south_east_id === cell.scene_cell_id) {
+          return true
+        }
+        if (this.currentCell.south_west_out && this.currentCell.south_west_id === cell.scene_cell_id) {
+          return true
+        }
+        if (this.currentCell.west_out && this.currentCell.west_id === cell.scene_cell_id) {
+          return true
+        }
+        if (this.currentCell.north_west_out && this.currentCell.north_west_id === cell.scene_cell_id) {
+          return true
+        }
+        if (this.currentCell.north_east_out && this.currentCell.north_east_id === cell.scene_cell_id) {
+          return true
+        }
+        return false
       },
-      move (ctx, x, y, cell) {
+      move (ctx, x, y) {
         if (this.isClick && ctx.isPointInPath(this.pixelsPoint.click.x, this.pixelsPoint.click.y)) {
-          if (cell.arrive && this.ableArrive(x, y)) {
+          if (this.ableArrive(x, y)) {
             this.axisPoint.click = {x: x, y: y}
             this.pixelsPoint.offset = {
               x: (x * this.width + (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
@@ -188,6 +205,8 @@
             this.pixelsPoint.target.x += this.pixelsPoint.offset.x
             this.pixelsPoint.target.y += this.pixelsPoint.offset.y
             this.isClick = false
+            let cell = this.getMapCellByAxis(x, y)
+            this.loadNpc(cell.scene_cell_id)
           }
         }
       },
@@ -218,22 +237,18 @@
       drawText (ctx, px, py, x, y, cell) {
         let tx = this.centerPixels.x + this.pixelsPoint.offset.x
         let ty = this.centerPixels.y + this.pixelsPoint.offset.y
-        if (ctx.isPointInPath(tx, ty)) {
-          ctx.fillStyle = '#CCFFFF'
-          ctx.fill()
-          ctx.fillStyle = '#666'
-          if (cell) {
-            ctx.fillText(cell.name, px, py)
-          }
-        } else if (cell) {
-//          if (this.ableArrive(x, y) && !this.isMove()) {
-          if (cell.arrive) {
-            ctx.fillStyle = '#FFF'
+        if (cell) {
+          if (ctx.isPointInPath(tx, ty)) {
+            ctx.fillStyle = '#333'
+            ctx.fill()
+            ctx.fillStyle = '#ccc'
+          } else if (this.ableArrive(x, y)) {
+            ctx.fillStyle = '#444'
+            ctx.fill()
+            ctx.fillStyle = '#ccc'
           } else {
-            ctx.fillStyle = '#CAE1FF'
+            ctx.fillStyle = '#777'
           }
-          ctx.fill()
-          ctx.fillStyle = '#666'
           ctx.fillText(cell.name, px, py)
         }
       },
@@ -245,25 +260,18 @@
         }
       },
       getMaps () {
-        this.$ws(this.$action.GET_MAP, {}, (data) => {
+        this.$ws(action.GET_MAP, {}, (data) => {
           this.maps.name = data.name
-          data.cells.forEach((c) => {
-            c.npcs = []
-          })
           this.maps.cells = data.cells
         })
       },
       getMapCellByAxis (x, y) {
-        if (!this.startMapCell) {
+        let ty = this.axisPoint.current.y + y + 4 //  + this.startMapCell.y
+        let tx = this.axisPoint.current.x + x + 5 // + this.startMapCell.x
+        if (ty < 0 || tx < 0 || this.maps.cells.length <= ty || this.maps.cells[0].length <= tx) {
           return null
         }
-        for (let i = 0; i < this.maps.cells.length; i++) {
-          let cell = this.maps.cells[i]
-          if (cell.x === this.axisPoint.current.x + this.startMapCell.x + x && cell.y === this.axisPoint.current.y + this.startMapCell.y + y) {
-            return cell
-          }
-        }
-        return null
+        return this.maps.cells[ty][tx]
       },
       getRatio (ctx) {
         let devicePixelRatio = window.devicePixelRatio || 1
@@ -283,7 +291,7 @@
         this.canvas.height = this.canvas.height * ratio
 
         this.pixelsPoint.click = {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
-        this.ctx.strokeStyle = '#333'
+        this.ctx.strokeStyle = '#fff'
         this.ctx.textAlign = 'center'
         this.ctx.textBaseline = 'middle'
         this.ctx.font = 0.8 * ratio + 'em Arial'
