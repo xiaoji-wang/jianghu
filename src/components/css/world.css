@@ -35,7 +35,7 @@
   height: 5rem;
   color: #666;
   padding: 0 0.5rem;
-  font-size: 14px;
+  /*font-size: 0.9em;*/
   text-indent: 2em;
   top: 2.5rem;
 }
@@ -46,7 +46,7 @@
 }
 
 .row.npc {
-  height: 4rem;
+  height: 4.5rem;
   top: 20rem;
   padding-right: 1%;
 }
@@ -58,30 +58,21 @@
   color: #333;
   padding: 0.2rem;
   overflow-y: auto;
-  background: rgba(0, 0, 0, 0.3);
+  background: #222;
 }
 
 .dialog {
-  background: url(/static/image/bg.jpg);
+  background: #000;
   position: absolute;
   z-index: 999;
   /*border-radius: 1rem;*/
-  border: solid 0.01rem #333;
+  border: solid 0.1rem #444;
   height: 24.5rem;
   color: #666;
   left: 0;
   top: 0;
   right: 0;
 }
-
-/*.dialog_mask {*/
-/*position: fixed;*/
-/*left: 0;*/
-/*top: 0;*/
-/*right: 0;*/
-/*bottom: 0;*/
-/*background: rgba(0, 0, 0, 0.4);*/
-/*}*/
 
 .dialog p.name {
   text-align: center;
@@ -106,13 +97,14 @@ button {
   outline: none;
   margin: 0.2rem 0 0 1%;
   width: 24%;
-  background: wheat;
-  color: #333;
-  padding: 0.3rem;
-  /*border-radius: 0.5rem;*/
-  border: solid 0.01rem #333;
+  background: #444;
+  color: #ccc;
+  padding: 0.3rem 0.3rem;
+  /*border: solid 0.02rem #ccc;*/
+  border: none;
 }
 
 button:active {
-  background: #FAEBD7;
+  background: #333;
+  transform:scale(0.95,0.95);
 }

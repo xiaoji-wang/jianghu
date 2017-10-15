@@ -1,37 +1,41 @@
 <template>
-  <div style="height: 100%;background: #000;position: relative;"
-       @click="showRoleInfo = false">
-    <router-view></router-view>
-    <div class="row npc">
-      <button v-if="!!n.name" v-for="n in npcs" @click="selectNpc(n)">{{n.name}}</button>
-    </div>
-    <div class="row text" @click="showNpcOperation=false">
-      <div v-for="s in console">{{s.name}}:{{s.word}}</div>
-    </div>
-    <transition
-      name="bounce"
-      enter-active-class="animated bounceInDown"
-      leave-active-class="animated bounceOutUp">
-      <div class="dialog" v-show="showNpcOperation">
-        <!--<li v-for="o in currentNpc.operation" @click="npcOperationClick(o)">{{o.name}}</li>-->
-        <p class="name">{{currentNpc.name}}</p>
-        <p class="desc">{{currentNpc.description}}</p>
-        <p class="action">
-          <button @click="npcTalk(currentNpc.id,currentNpc.name)">交谈</button>
-        </p>
-        <p class="action">
-          <button>交易</button>
-        </p>
+  <div class="container">
+    <div class="row header">
+      <div class="name" @click="nameClick($event)">
+        王大明
+        <ul v-show="showRoleInfo" style="text-align: center;">
+          <li>
+            <router-link to="/role">资&nbsp;&nbsp;料</router-link>
+          </li>
+          <li>
+            <router-link to="/">武&nbsp;&nbsp;功</router-link>
+          </li>
+          <li>
+            <router-link to="/">背&nbsp;&nbsp;包</router-link>
+          </li>
+        </ul>
       </div>
-    </transition>
-    <!--<div class="dialog_mask" v-show="showNpcOperation" @click="showNpcOperation=false"></div>-->
+      <div
+        style="color: #006400;text-align: center;line-height: 2.5rem;">
+        -&nbsp;{{maps.name}}&nbsp;-
+      </div>
+      <div style="color: #ddd;position: absolute;right: 0.5rem;line-height: 2.5rem;top:0;">
+        设置
+      </div>
+    </div>
+    <div class="row desc">
+      {{currentCell.description}}
+    </div>
+    <div class="row map">
+      <canvas id="canvas" @click="click($event)"></canvas>
+    </div>
   </div>
 </template>
-<!--<link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">-->
+
 <script>
   import {action} from './js/constant'
   export default {
-    name: 'world',
+    name: 'map',
     data () {
       return {
         refresh: true,
@@ -250,59 +254,58 @@
       }
     },
     mounted () {
-      this.$router.push('/world/map')
-//      this.initCanvas()
-//      let startY = Math.floor(this.maps.size.y / 2)
-//      let endY = Math.ceil(this.maps.size.y / 2)
-//      let startX = Math.floor(this.maps.size.x / 2)
-//      let endX = Math.ceil(this.maps.size.x / 2)
-//      let fn = () => {
-//        if (this.refresh) {
-//          if (this.pixelsPoint.offset.x < 0) {
-//            this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-//            if (this.pixelsPoint.offset.x > 0) {
-//              this.pixelsPoint.offset.x = 0
-//              this.refresh = false
-//            }
-//          }
-//          if (this.pixelsPoint.offset.x > 0) {
-//            this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
-//            if (this.pixelsPoint.offset.x < 0) {
-//              this.pixelsPoint.offset.x = 0
-//              this.refresh = false
-//            }
-//          }
-//          if (this.pixelsPoint.offset.y > 0) {
-//            this.pixelsPoint.offset.y -= this.distanceY
-//            if (this.pixelsPoint.offset.y < 0) {
-//              this.pixelsPoint.offset.y = 0
-//              this.refresh = false
-//            }
-//          }
-//          if (this.pixelsPoint.offset.y < 0) {
-//            this.pixelsPoint.offset.y += this.distanceY
-//            if (this.pixelsPoint.offset.y > 0) {
-//              this.pixelsPoint.offset.y = 0
-//              this.refresh = false
-//            }
-//          }
-//          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
-//          for (let y = -startY; y <= endY; y++) {
-//            for (let x = -startX; x <= endX; x++) {
-//              this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
-//            }
-//          }
-//        } else {
-//          this.pixelsPoint.offset = {x: 0, y: 0}
-//          this.pixelsPoint.target = {x: 0, y: 0}
-//          this.axisPoint.current.x += this.axisPoint.click.x
-//          this.axisPoint.current.y += this.axisPoint.click.y
-//          this.refresh = true
-//        }
-//        window.requestAnimationFrame(fn)
-//      }
-//      fn()
-//      this.getMaps()
+      this.initCanvas()
+      let startY = Math.floor(this.maps.size.y / 2)
+      let endY = Math.ceil(this.maps.size.y / 2)
+      let startX = Math.floor(this.maps.size.x / 2)
+      let endX = Math.ceil(this.maps.size.x / 2)
+      let fn = () => {
+        if (this.refresh) {
+          if (this.pixelsPoint.offset.x < 0) {
+            this.pixelsPoint.offset.x += (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+            if (this.pixelsPoint.offset.x > 0) {
+              this.pixelsPoint.offset.x = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.x > 0) {
+            this.pixelsPoint.offset.x -= (this.distanceX * (this.pixelsPoint.offset.y === 0 ? 2 : 1))
+            if (this.pixelsPoint.offset.x < 0) {
+              this.pixelsPoint.offset.x = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.y > 0) {
+            this.pixelsPoint.offset.y -= this.distanceY
+            if (this.pixelsPoint.offset.y < 0) {
+              this.pixelsPoint.offset.y = 0
+              this.refresh = false
+            }
+          }
+          if (this.pixelsPoint.offset.y < 0) {
+            this.pixelsPoint.offset.y += this.distanceY
+            if (this.pixelsPoint.offset.y > 0) {
+              this.pixelsPoint.offset.y = 0
+              this.refresh = false
+            }
+          }
+          this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
+          for (let y = -startY; y <= endY; y++) {
+            for (let x = -startX; x <= endX; x++) {
+              this.drawMap(this.ctx, x, y, this.getMapCellByAxis(x, y))
+            }
+          }
+        } else {
+          this.pixelsPoint.offset = {x: 0, y: 0}
+          this.pixelsPoint.target = {x: 0, y: 0}
+          this.axisPoint.current.x += this.axisPoint.click.x
+          this.axisPoint.current.y += this.axisPoint.click.y
+          this.refresh = true
+        }
+        window.requestAnimationFrame(fn)
+      }
+      fn()
+      this.getMaps()
     },
     watch: {
       console (v1, v2) {
@@ -314,6 +317,7 @@
     }
   }
 </script>
+
 <style scoped>
   @import "css/world.css";
 </style>

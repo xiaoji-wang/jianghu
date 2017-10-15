@@ -37,20 +37,21 @@
     background: #338E8E;
   }
 
-  button {
-    outline: none;
-    border: none;
-    display: inline-block;
-    font-size: 1rem;
-    /*line-height: 1.5rem;*/
-    border-radius: 0.3rem;
-    margin: 0.3rem 0 0.3rem 0.3rem;
-    padding: 0.1rem 0.4rem;
-    background: #338E8E;
-    color: white;
-  }
+  /*button {*/
+    /*outline: none;*/
+    /*border: none;*/
+    /*display: inline-block;*/
+    /*font-size: 1rem;*/
+    /*!*line-height: 1.5rem;*!*/
+    /*border-radius: 0.3rem;*/
+    /*margin: 0.3rem 0 0.3rem 0.3rem;*/
+    /*padding: 0.1rem 0.4rem;*/
+    /*background: #338E8E;*/
+    /*color: white;*/
+  /*}*/
 
-  button:active {
+  a:active {
+    transform:scale(0.95,0.95);
     background: #114949;
   }
 </style>

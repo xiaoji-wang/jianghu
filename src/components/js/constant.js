@@ -3,5 +3,6 @@
  */
 export const action = {
   GET_MAP: 1,
-  SELECTED_MAP: 2
+  SELECTED_MAP: 2,
+  SELECTED_NPC: 3
 }
