@@ -15,6 +15,14 @@ export default new Vuex.Store({
   mutations: {
     consoles (state, v) {
       state.consoles.push(v)
+      this._vm.$nextTick(() => {
+        let talks = document.getElementsByClassName('row text')[0]
+        talks.scrollTop = talks.scrollHeight
+      })
+    },
+    setPlayerLocation (state, v) {
+      state.player.x = v.x
+      state.player.y = v.y
     }
   },
   getters: {},

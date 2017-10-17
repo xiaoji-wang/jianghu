@@ -10,8 +10,8 @@ import animate from 'animate.css'
 Vue.config.productionTip = false
 
 // Vue.use(socket, {url: 'ws://114.215.97.130:8270/jianghu'})
-Vue.use(socket, {url: 'ws://127.0.0.1:8270/jianghu'})
-// Vue.use(socket, {url: 'ws://192.168.0.104:8270/jianghu'})
+// Vue.use(socket, {url: 'ws://127.0.0.1:8270/jianghu'})
+Vue.use(socket, {url: 'ws://192.168.22.157:8270/jianghu'})
 
 Vue.use(animate)
 

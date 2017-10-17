@@ -68,7 +68,7 @@
         return {x: this.canvas.width >> 1, y: this.canvas.height >> 1}
       },
       distanceX () {
-        return 4
+        return 6
       },
       distanceY () {
         return this.distanceX * 1.73
@@ -79,6 +79,9 @@
           return center
         }
         return {}
+      },
+      player () {
+        return this.$store.state.player
       }
     },
     methods: {
@@ -86,6 +89,9 @@
         this.$ws(action.GET_MAP, {}, (data) => {
           this.maps.name = data.name
           this.maps.cells = data.cells
+          window.setTimeout(() => {
+            this.loadNpc(this.maps.cells[this.player.y][this.player.x].id)
+          }, 100)
         })
       },
       loadNpc (id) {
@@ -95,6 +101,10 @@
       },
       selectNpc (id) {
         this.$router.push({name: 'npc', params: {id: id}})
+        this.$store.commit('setPlayerLocation', {
+          x: this.player.x + this.axisPoint.current.x,
+          y: this.player.y + this.axisPoint.current.y
+        })
       },
       click (e) {
         if (!this.isMove()) {
@@ -136,7 +146,7 @@
           if (this.ableArrive(x, y)) {
             this.axisPoint.click = {x: x, y: y}
             this.pixelsPoint.offset = {
-              x: (x * this.width + (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
+              x: (x * this.width + (this.player.y % 2 === 0 ? 1 : -1) * (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
               y: y * 1.5 * this.lengthen
             }
             this.pixelsPoint.target.x += this.pixelsPoint.offset.x
@@ -149,7 +159,7 @@
       },
       axisToPixels (axis) {
         return {
-          x: (this.canvas.width >> 1) + axis.x * this.width + (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0) ? this.halfWidth : -this.halfWidth)),
+          x: (this.canvas.width >> 1) + axis.x * this.width + (this.player.y % 2 === 0 ? 1 : -1) * (axis.y % 2 === 0 ? 0 : ((this.axisPoint.current.y % 2 === 0) ? this.halfWidth : -this.halfWidth)),
           y: (this.canvas.height >> 1) + axis.y * ((this.lengthen << 1) - this.quarterHeight)
         }
       },
@@ -197,8 +207,8 @@
         }
       },
       getMapCellByAxis (x, y) {
-        let ty = this.axisPoint.current.y + y + 4 //  + this.startMapCell.y
-        let tx = this.axisPoint.current.x + x + 5 // + this.startMapCell.x
+        let ty = this.axisPoint.current.y + y + this.player.y
+        let tx = this.axisPoint.current.x + x + this.player.x
         if (ty < 0 || tx < 0 || this.maps.cells.length <= ty || this.maps.cells[0].length <= tx) {
           return null
         }
