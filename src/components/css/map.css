@@ -1,0 +1,39 @@
+.row.header {
+  line-height: 2.5rem;
+  color: #ccc;
+  display: flex;
+}
+
+.row.header div {
+  flex: 3;
+}
+
+.row.header div:first-of-type {
+  flex: 2;
+  padding-left: 0.5rem;
+}
+
+.row.header div:last-of-type {
+  flex: 2;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.row.desc {
+  height: 5rem;
+  color: #666;
+  padding: 0 0.5rem;
+  text-indent: 2em;
+  top: 2.5rem;
+}
+
+.row.map {
+  height: 12rem;
+  top: 7.5rem;
+}
+
+.row.npc {
+  height: 4.5rem;
+  top: 20rem;
+  padding-right: 1%;
+}

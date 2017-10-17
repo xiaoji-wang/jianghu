@@ -1,7 +1,7 @@
 /**
  * Created by wxji on 2017-09-05.
  */
-export default{
+export default {
   install (Vue, options) {
     let callback = null
     const ws = new window.WebSocket(options.url)

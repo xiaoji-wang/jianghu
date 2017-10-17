@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import World from '@/components/World'
 import Map from '@/components/Map'
+import Npc from '@/components/Npc'
 import RoleInfo from '@/components/RoleInfo'
 import Fight from '@/components/Fight'
 
@@ -17,6 +18,8 @@ export default new Router({
     component: World,
     children: [{
       path: 'map', name: 'map', component: Map
+    }, {
+      path: 'npc/:id', name: 'npc', component: Npc
     }]
   }, {
     path: '/role', name: 'role', component: RoleInfo

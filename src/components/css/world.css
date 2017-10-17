@@ -4,93 +4,14 @@
   right: 0;
 }
 
-.row.header {
-  height: 3rem;
-}
-
-.row.header div.name {
-  color: #666;
-  position: absolute;
-  left: 0.5rem;
-  padding-right: 0.5rem;
-  line-height: 2.5rem;
-  outline: none;
-}
-
-.row.header div.name:hover ul {
-  visibility: visible;
-}
-
-.row.header div.name ul {
-  position: absolute;
-  background: white;
-  padding: 0.2rem 0.5rem;
-  z-index: 9;
-  width: 5rem;
-  margin-top: -0.1rem;
-  left: -0.5rem;
-}
-
-.row.desc {
-  height: 5rem;
-  color: #666;
-  padding: 0 0.5rem;
-  /*font-size: 0.9em;*/
-  text-indent: 2em;
-  top: 2.5rem;
-}
-
-.row.map {
-  height: 12rem;
-  top: 7.5rem;
-}
-
-.row.npc {
-  height: 4.5rem;
-  top: 20rem;
-  padding-right: 1%;
-}
-
 .row.text {
   font-size: 0.8em;
   bottom: 0;
   top: 24.5rem;
-  color: #333;
+  color: #ccc;
   padding: 0.2rem;
   overflow-y: auto;
   background: #222;
-}
-
-.dialog {
-  background: #000;
-  position: absolute;
-  z-index: 999;
-  /*border-radius: 1rem;*/
-  border: solid 0.1rem #444;
-  height: 24.5rem;
-  color: #666;
-  left: 0;
-  top: 0;
-  right: 0;
-}
-
-.dialog p.name {
-  text-align: center;
-  line-height: 3rem;
-}
-
-.dialog p.desc {
-  text-indent: 2em;
-  padding: 0 0.8rem;
-}
-
-.dialog p.action {
-  text-align: center;
-  margin: 0.5rem 0;
-}
-
-.dialog p.action button {
-  width: 30%;
 }
 
 button {

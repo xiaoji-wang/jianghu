@@ -1,25 +1,14 @@
 <template>
   <div class="container">
     <div class="row header">
-      <div class="name" @click="nameClick($event)">
+      <div @click="$router.push('/role')">
         王大明
-        <ul v-show="showRoleInfo" style="text-align: center;">
-          <li>
-            <router-link to="/role">资&nbsp;&nbsp;料</router-link>
-          </li>
-          <li>
-            <router-link to="/">武&nbsp;&nbsp;功</router-link>
-          </li>
-          <li>
-            <router-link to="/">背&nbsp;&nbsp;包</router-link>
-          </li>
-        </ul>
       </div>
       <div
-        style="color: #006400;text-align: center;line-height: 2.5rem;">
+        style="color: #006400;text-align: center;">
         -&nbsp;{{maps.name}}&nbsp;-
       </div>
-      <div style="color: #ddd;position: absolute;right: 0.5rem;line-height: 2.5rem;top:0;">
+      <div>
         设置
       </div>
     </div>
@@ -28,6 +17,9 @@
     </div>
     <div class="row map">
       <canvas id="canvas" @click="click($event)"></canvas>
+    </div>
+    <div class="row npc">
+      <button v-if="!!n.name" v-for="n in npcs" @click="selectNpc(n.id)">{{n.name}}</button>
     </div>
   </div>
 </template>
@@ -40,11 +32,7 @@
       return {
         refresh: true,
         isClick: false,
-        showRoleInfo: false,
-        showNpcOperation: false,
-        currentNpc: {},
         npcs: [],
-        console: [],
         maps: {name: '', size: {x: 8, y: 6}, cells: []},
         axisPoint: {
           click: {x: 0, y: 0},
@@ -105,17 +93,8 @@
           this.npcs = data
         })
       },
-      selectNpc (npc) {
-        this.$ws(action.SELECTED_NPC, {id: npc.npc_id}, (data) => {
-          this.currentNpc = data
-          this.showNpcOperation = !this.showNpcOperation
-        })
-      },
-      npcTalk (id, name) {
-        this.$ws(action.NPC_TALK, {id: id}, (data) => {
-          data.name = name
-          this.console.push(data)
-        })
+      selectNpc (id) {
+        this.$router.push({name: 'npc', params: {id: id}})
       },
       click (e) {
         if (!this.isMove()) {
@@ -123,10 +102,6 @@
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
           this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
         }
-      },
-      nameClick (event) {
-        this.showRoleInfo = !this.showRoleInfo
-        event.cancelBubble = true
       },
       isMove () {
         return this.pixelsPoint.offset.x !== 0 || this.pixelsPoint.offset.y !== 0
@@ -136,22 +111,22 @@
         if (!cell) {
           return false
         }
-        if (this.currentCell.east_out && this.currentCell.east_id === cell.scene_cell_id) {
+        if (this.currentCell.eOut && this.currentCell.eId === cell.id) {
           return true
         }
-        if (this.currentCell.south_east_out && this.currentCell.south_east_id === cell.scene_cell_id) {
+        if (this.currentCell.seOut && this.currentCell.seId === cell.id) {
           return true
         }
-        if (this.currentCell.south_west_out && this.currentCell.south_west_id === cell.scene_cell_id) {
+        if (this.currentCell.swOut && this.currentCell.swId === cell.id) {
           return true
         }
-        if (this.currentCell.west_out && this.currentCell.west_id === cell.scene_cell_id) {
+        if (this.currentCell.wOut && this.currentCell.wId === cell.id) {
           return true
         }
-        if (this.currentCell.north_west_out && this.currentCell.north_west_id === cell.scene_cell_id) {
+        if (this.currentCell.nwOut && this.currentCell.nwId === cell.id) {
           return true
         }
-        if (this.currentCell.north_east_out && this.currentCell.north_east_id === cell.scene_cell_id) {
+        if (this.currentCell.neOut && this.currentCell.neId === cell.id) {
           return true
         }
         return false
@@ -168,7 +143,7 @@
             this.pixelsPoint.target.y += this.pixelsPoint.offset.y
             this.isClick = false
             let cell = this.getMapCellByAxis(x, y)
-            this.loadNpc(cell.scene_cell_id)
+            this.loadNpc(cell.id)
           }
         }
       },
@@ -306,18 +281,11 @@
       }
       fn()
       this.getMaps()
-    },
-    watch: {
-      console (v1, v2) {
-        this.$nextTick(() => {
-          let talks = document.getElementsByClassName('row text')[0]
-          talks.scrollTop = talks.scrollHeight
-        })
-      }
     }
   }
 </script>
 
 <style scoped>
+  @import "css/map.css";
   @import "css/world.css";
 </style>
