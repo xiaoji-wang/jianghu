@@ -14,7 +14,7 @@
     </div>
     <div class="operate">
       <button @click="talk">交谈</button>
-      <button v-if="npc.attack_able">过招</button>
+      <button v-if="npc.attack_able" @click="$router.push('/world/fight')">过招</button>
       <button @click="$router.push('/world/map')">返回</button>
     </div>
   </div>

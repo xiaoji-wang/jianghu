@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="row header">
-      <div @click="$router.push('/role')">
+      <div @click="$router.push('/player')">
         王大明
       </div>
       <div
@@ -19,7 +19,7 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <button v-if="!!n.name" v-for="n in npcs" @click="selectNpc(n.id)">{{n.name}}</button>
+      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="selectNpc(n.id)">{{n.name}}</button>
     </div>
   </div>
 </template>
@@ -89,14 +89,8 @@
         this.$ws(action.GET_MAP, {}, (data) => {
           this.maps.name = data.name
           this.maps.cells = data.cells
-          window.setTimeout(() => {
-            this.loadNpc(this.maps.cells[this.player.y][this.player.x].id)
-          }, 100)
-        })
-      },
-      loadNpc (id) {
-        this.$ws(action.SELECTED_MAP, {id: id}, (data) => {
-          this.npcs = data
+//          this.screenRefresh()
+//          this.refresh = false
         })
       },
       selectNpc (id) {
@@ -111,6 +105,8 @@
           this.isClick = true
           this.pixelsPoint.click.x = e.offsetX * this.getRatio(this.ctx)
           this.pixelsPoint.click.y = e.offsetY * this.getRatio(this.ctx)
+//          this.refresh = true
+//          this.screenRefresh()
         }
       },
       isMove () {
@@ -146,14 +142,12 @@
           if (this.ableArrive(x, y)) {
             this.axisPoint.click = {x: x, y: y}
             this.pixelsPoint.offset = {
-              x: (x * this.width + (this.player.y % 2 === 0 ? 1 : -1) * (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth))),
+              x: x * this.width + (this.player.y % 2 === 0 ? 1 : -1) * (y % 2 === 0 ? 0 : (this.axisPoint.current.y % 2 === 0 ? this.halfWidth : -this.halfWidth)),
               y: y * 1.5 * this.lengthen
             }
             this.pixelsPoint.target.x += this.pixelsPoint.offset.x
             this.pixelsPoint.target.y += this.pixelsPoint.offset.y
             this.isClick = false
-            let cell = this.getMapCellByAxis(x, y)
-            this.loadNpc(cell.id)
           }
         }
       },

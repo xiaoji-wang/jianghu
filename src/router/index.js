@@ -4,7 +4,7 @@ import Login from '@/components/Login'
 import World from '@/components/World'
 import Map from '@/components/Map'
 import Npc from '@/components/Npc'
-import RoleInfo from '@/components/RoleInfo'
+import Player from '@/components/Player'
 import Fight from '@/components/Fight'
 
 Vue.use(Router)
@@ -20,10 +20,10 @@ export default new Router({
       path: 'map', name: 'map', component: Map
     }, {
       path: 'npc/:id', name: 'npc', component: Npc
+    }, {
+      path: 'fight', name: 'fight', component: Fight
     }]
   }, {
-    path: '/role', name: 'role', component: RoleInfo
-  }, {
-    path: '/fight', name: 'fight', component: Fight
+    path: '/player', name: 'player', component: Player
   }]
 })

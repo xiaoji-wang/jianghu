@@ -3,7 +3,7 @@
     <transition enter-active-class="animated fadeIn" leave-active-class="animated fadeOut">
       <router-view></router-view>
     </transition>
-    <div class="row text" @click="click">
+    <div class="row text">
       <div v-for="s in consoles">{{s}}</div>
     </div>
     <!--<npc v-show="false"></npc>-->
@@ -23,11 +23,11 @@
       'consoles'
     ]),
     methods: {
-      click () {
-        if (this.$route.name === 'npc') {
-          this.$router.push('/world/map')
-        }
-      }
+//      click () {
+//        if (this.$route.name === 'npc') {
+//          this.$router.push('/world/map')
+//        }
+//      }
     },
 //    components: {
 //      'npc': npc

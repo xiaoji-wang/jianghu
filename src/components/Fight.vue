@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="close">
-      <router-link to="/world">逃跑</router-link>
+      <router-link to="/world/map">逃跑</router-link>
     </div>
   </div>
 </template>
