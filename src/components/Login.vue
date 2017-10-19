@@ -1,7 +1,7 @@
 <template>
   <div style="height: 100%;background: black;position: relative;">
     <!--<router-link to="/world">步入江湖</router-link>-->
-    <a @click="enter">步入江湖</a>
+    <router-link to="/world/map" replace>步入江湖</router-link>
   </div>
 </template>
 
@@ -15,9 +15,9 @@
       }
     },
     methods: {
-      enter () {
-        this.$router.push('/world')
-      }
+//      enter () {
+//        this.$router.push('/world')
+//      }
     }
   }
 </script>

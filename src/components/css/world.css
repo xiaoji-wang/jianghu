@@ -13,19 +13,3 @@
   overflow-y: auto;
   background: #222;
 }
-
-button {
-  outline: none;
-  margin: 0.2rem 0 0 1%;
-  width: 24%;
-  background: #444;
-  color: #ccc;
-  padding: 0.3rem 0.3rem;
-  /*border: solid 0.02rem #ccc;*/
-  border: none;
-}
-
-button:active {
-  background: #333;
-  transform:scale(0.95,0.95);
-}

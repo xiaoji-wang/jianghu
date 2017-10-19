@@ -27,4 +27,21 @@
     list-style-type: none;
   }
 
+  a {
+    text-decoration: none;
+    display: inline-block;
+    font-size: 0.8em;
+    outline: none;
+    background: #444;
+    color: #ccc;
+    border: none;
+    line-height: 1.8rem;
+    text-align: center;
+  }
+
+  a:active {
+    background: #333;
+    transform: scale(0.95, 0.95);
+  }
+
 </style>

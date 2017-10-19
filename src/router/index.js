@@ -17,7 +17,7 @@ export default new Router({
     name: 'world',
     component: World,
     children: [{
-      path: 'map', name: 'map', component: Map
+      path: 'map', name: 'map', component: Map, mate: {keepAlive: true}
     }, {
       path: 'npc/:id', name: 'npc', component: Npc
     }, {

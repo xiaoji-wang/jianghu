@@ -19,7 +19,8 @@
       <canvas id="canvas" @click="click($event)"></canvas>
     </div>
     <div class="row npc">
-      <button v-if="!!n.name" v-for="n in currentCell.npc" @click="selectNpc(n.id)">{{n.name}}</button>
+      <a href="javascript:void(0)" v-if="!!n.name" v-for="n in currentCell.npc"
+         @click="selectNpc(n.id)">{{n.name}}</a>
     </div>
   </div>
 </template>
@@ -94,11 +95,11 @@
         })
       },
       selectNpc (id) {
-        this.$router.push({name: 'npc', params: {id: id}})
-        this.$store.commit('setPlayerLocation', {
-          x: this.player.x + this.axisPoint.current.x,
-          y: this.player.y + this.axisPoint.current.y
-        })
+        this.$router.replace({name: 'npc', params: {id: id}})
+//        this.$store.commit('setPlayerLocation', {
+//          x: this.player.x + this.axisPoint.current.x,
+//          y: this.player.y + this.axisPoint.current.y
+//        })
       },
       click (e) {
         if (!this.isMove()) {
@@ -292,4 +293,9 @@
 <style scoped>
   @import "css/map.css";
   @import "css/world.css";
+
+  a {
+    width: 24%;
+    margin: 0.2rem 0 0 1%;
+  }
 </style>

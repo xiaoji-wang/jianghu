@@ -1,7 +1,40 @@
 <template>
   <div class="container">
-    <div class="close">
-      <router-link to="/world/map">逃跑</router-link>
+    <div class="roles">
+      <div class="our" style="border-right:solid 0.1rem #444;">
+        <div>
+          <span>宠物</span>
+          <span><span></span>王大明</span>
+        </div>
+        <div>
+          <span>随从</span>
+        </div>
+        <div>
+          <span>菜B随从</span>
+        </div>
+        <div>
+          <span>乐色随从</span>
+          <span>肉盾宠物</span>
+        </div>
+        <div>
+          <span>随从</span>
+        </div>
+      </div>
+      <div class="enemy">
+        <div>
+          <span>村民</span>
+        </div>
+        <div>
+          <span>村长</span>
+          <span>宠物</span>
+        </div>
+        <div>
+          <span>村民</span>
+        </div>
+      </div>
+    </div>
+    <div class="buttonDiv" style="text-align: center;">
+      <router-link to="/world/map" replace>逃跑</router-link>
     </div>
   </div>
 </template>
@@ -18,29 +51,36 @@
 </script>
 
 <style scoped>
-  .container {
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    position: absolute;
-    background: black;
-    border: solid 0.1rem #388E8E;
-    color: #388E8E;
+  .roles {
+    display: flex;
   }
 
-  .close {
-    position: absolute;
-    border-left: solid 0.1rem #388E8E;
-    border-bottom: solid 0.1rem #388E8E;
-    width: 2.5rem;
-    line-height: 2.5rem;
-    right: 0;
-    text-align: center;
+  .our, .enemy {
+    flex: 1;
+    height: 20rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-bottom: solid 0.1rem #444;
+  }
+
+  .our span, .enemy span {
+    margin: 0 0 0 0.5rem;
+    line-height: 3rem;
+    color: #ccc;
+    border-top: solid 0.1rem #cd0000;
+  }
+
+  .buttonDiv {
+    height: 4.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   a {
-    color: #338E8E;
-    text-decoration: none;
+    width: 5rem;
   }
 </style>

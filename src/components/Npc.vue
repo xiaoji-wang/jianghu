@@ -7,15 +7,14 @@
       <div style="color: #006400;">
         Lv：{{npc.level}}
       </div>
-      <!--<div>返回</div>-->
     </div>
     <div class="row desc">
       {{npc.description}}
     </div>
     <div class="operate">
-      <button @click="talk">交谈</button>
-      <button v-if="npc.attack_able" @click="$router.push('/world/fight')">过招</button>
-      <button @click="$router.push('/world/map')">返回</button>
+      <a href="javascript:void(0)" @click="talk">交谈</a>
+      <router-link v-if="npc.attack_able" to="/world/fight" replace>过招</router-link>
+      <router-link to="/world/map" replace>返回</router-link>
     </div>
   </div>
 </template>
@@ -48,18 +47,16 @@
     color: #fff;
   }
 
-  button {
+  a {
     width: 5rem;
     margin-bottom: 0.5rem;
   }
 
   .operate {
-    width: 6rem;
-    text-align: center;
+    width: 5rem;
     position: absolute;
     bottom: 2rem;
     left: 50%;
-    margin-left: -3rem;
-    min-height: 6rem;
+    margin-left: -2.5rem;
   }
 </style>
