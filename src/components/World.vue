@@ -6,7 +6,7 @@
       </keep-alive>
     </transition>
     <div class="row text">
-      <div v-for="s in consoles">{{s}}</div>
+      <div v-for="s in consoles" style="margin: 0.1rem">{{s}}</div>
     </div>
   </div>
 </template>

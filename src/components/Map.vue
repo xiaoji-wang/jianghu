@@ -5,7 +5,7 @@
         王大明
       </div>
       <div
-        style="color: #006400;text-align: center;">
+        style="color: #008B00;text-align: center;">
         -&nbsp;{{maps.name}}&nbsp;-
       </div>
       <div>
