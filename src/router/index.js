@@ -20,9 +20,9 @@ export default new Router({
       path: 'map', name: 'map', component: Map, mate: {keepAlive: true}
     }, {
       path: 'npc/:id', name: 'npc', component: Npc
-    }, {
-      path: 'fight', name: 'fight', component: Fight
     }]
+  }, {
+    path: '/fight', name: 'fight', component: Fight
   }, {
     path: '/player', name: 'player', component: Player
   }]

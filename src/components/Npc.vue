@@ -13,7 +13,7 @@
     </div>
     <div class="operate">
       <a href="javascript:void(0)" @click="talk">交谈</a>
-      <router-link v-if="npc.attack_able" to="/world/fight" replace>过招</router-link>
+      <router-link v-if="npc.attack_able" to="/fight" replace>过招</router-link>
       <router-link to="/world/map" replace>返回</router-link>
     </div>
   </div>
