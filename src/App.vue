@@ -1,6 +1,8 @@
 <template>
   <div id="app" style="height: 100%;">
-    <router-view></router-view>
+    <keep-alive include="world">
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
