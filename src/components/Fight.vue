@@ -128,7 +128,7 @@
             complete: () => {
               this.hurt = r.attack
               target.hp = target.hp - r.attack
-              this.consoles.push(r.name + '对' + target.name + '使出了一招<span style="color: #388e8e;">【普通的一拳】</span>，造成了' + r.attack + '点伤害')
+              this.consoles.push(r.name + '对' + target.name + '使出了一招<span style="color: #388e8e;">【普通的一拳】</span>，造成了' + r.attack + '点伤害。')
             }
           })
           // 返回
@@ -152,6 +152,7 @@
               let isOver = false
               if (target.hp <= 0) {
                 target.cd = 0
+                this.consoles.push(target.name + '已落败！')
                 if (alive.length <= 1) {
                   isOver = true
                 }
