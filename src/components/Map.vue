@@ -90,8 +90,6 @@
         this.$ws(action.GET_MAP, {}, (data) => {
           this.maps.name = data.name
           this.maps.cells = data.cells
-//          this.screenRefresh()
-//          this.refresh = false
         })
       },
       selectNpc (id) {
