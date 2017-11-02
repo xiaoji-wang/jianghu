@@ -20,7 +20,7 @@
     </div>
     <div class="buttonDiv" style="text-align: center;">
       <a href="javascript:void(0)" @click="escape" v-show="refresh">逃跑</a>
-      <router-link to="/world/map" replace v-show="!refresh">返回</router-link>
+      <a href="javascript:void(0)" @click="escape" v-show="!refresh">返回</a>
     </div>
     <div class="text">
       <div v-for="s in consoles" style="margin: 0.1rem" v-html="s"></div>
