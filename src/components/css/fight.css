@@ -1,0 +1,91 @@
+.roles {
+  color: #ccc;
+  display: flex;
+}
+
+.left, .right {
+  flex: 1;
+  height: 20rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-bottom: solid 0.1rem #444;
+}
+
+.role {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+  width: 3rem;
+}
+
+.hp {
+  background: #cd0000;
+  height: 0.2rem;
+  margin-bottom: 0.1rem;
+}
+
+.ki {
+  background: #36648B;
+  height: 0.2rem;
+  margin-bottom: 0.1rem;
+}
+
+.cd {
+  background: #eeb422;
+  height: 0.2rem;
+  width: 0;
+}
+
+.buttonDiv {
+  height: 4.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+a {
+  width: 5rem;
+}
+
+.dead {
+  color: #666;
+}
+
+.hurt {
+  position: absolute;
+  color: red;
+  text-align: center;
+  width: 100%;
+  /*font-size: 1em;*/
+  font-weight: bold;
+  top: 0rem;
+  display: none;
+}
+
+.text {
+  padding: 0.2rem;
+  overflow-y: auto;
+  font-size: 0.8em;
+  color: #ccc;
+  position: absolute;
+  top: 24.5rem;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #222;
+}
+
+.result {
+  position: absolute;
+  top: -21rem;
+  /*top: 0rem;*/
+  left: 0;
+  right: 0;
+  height: 20rem;
+  border: solid 0.1rem #444;
+  background: #000;
+  color: #ccc;
+}

@@ -3,17 +3,31 @@
     <div class="roles">
       <div class="left">
         <div v-for="l in left" class="role" :id="'r'+l.id" :css="false">
+          <!--<div style="border: solid 0.01rem #fff">-->
           <div class="hp" :style="{width:refreshHp(l.id,'LEFT')}"></div>
+          <!--</div>-->
+          <!--<div style="border: solid 0.01rem #fff">-->
+          <div class="ki" :style="{width:refreshKi(l.id,'LEFT')}"></div>
+          <!--</div>-->
+          <!--<div style="border: solid 0.01rem #fff">-->
           <div class="cd" :style="{width:refreshCD(l.id,'LEFT')}"></div>
-          <div :class="{dead:l.hp<=0}">{{l.name}}</div>
+          <!--</div>-->
+          <div :class="{dead:l.hp<=0}" style="text-align: center;">{{l.name}}</div>
           <div class="hurt">{{hurt}}</div>
         </div>
       </div>
       <div class="right">
         <div v-for="r in right" class="role" :id="'r'+r.id" :css="false">
+          <!--<div style="border: solid 0.01rem #fff">-->
           <div class="hp" :style="{width:refreshHp(r.id,'RIGHT')}"></div>
+          <!--</div>-->
+          <!--<div style="border: solid 0.01rem #fff">-->
+          <div class="ki" :style="{width:refreshKi(r.id,'RIGHT')}"></div>
+          <!--</div>-->
+          <!--<div style="border: solid 0.01rem #fff">-->
           <div class="cd" :style="{width:refreshCD(r.id,'RIGHT')}"></div>
-          <div :class="{dead:r.hp<=0}">{{r.name}}</div>
+          <!--</div>-->
+          <div :class="{dead:r.hp<=0}" style="text-align: center;">{{r.name}}</div>
           <div class="hurt">{{hurt}}</div>
         </div>
       </div>
@@ -34,6 +48,14 @@
           <p>掉落：无</p>
         </div>
       </div>
+      <!--<div style="position: absolute;">-->
+      <!--<svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">-->
+      <!--<line x1="50%" y1="100%" x2="50%" y2="90%" style="stroke:rgb(99,99,99);stroke-width:2">-->
+      <!--<animate attributeName="y2" from="100%" to="0" begin="0;second.end" dur="2s" id="first"/>-->
+      <!--<animate attributeName="y1" from="100%" to="0" begin="first.end" dur="2s" id="second"/>-->
+      <!--</line>-->
+      <!--</svg>-->
+      <!--</div>-->
     </div>
   </div>
 </template>
@@ -46,15 +68,27 @@
       return {
         refresh: true,
         hurt: 0,
-        result: '未知结果？',
+        result: '未知结果',
         win: false,
         consoles: [],
         left: [
-          {id: 1, name: '主角', maxHp: 10, hp: 10, cd: 0, attackSpeed: 3, location: 'LEFT', attack: 4, ki: 6},
-          {id: 5, name: '跟班', maxHp: 10, hp: 10, cd: 0, attackSpeed: 2, location: 'LEFT', attack: 2, ki: 6}
+          {id: 1, name: '主角', maxHp: 10, hp: 10, cd: 0, attackSpeed: 3, location: 'LEFT', attack: 4, ki: 8, maxKi: 8},
+          {id: 5, name: '随从', maxHp: 10, hp: 10, cd: 0, attackSpeed: 2, location: 'LEFT', attack: 2, ki: 8, maxKi: 8}
         ],
         right: [
-          {id: 2, name: '村民1', maxHp: 10, hp: 10, cd: 0, attackSpeed: 4, location: 'RIGHT', attack: 2, ki: 5}
+          {
+            id: 2,
+            name: '村民',
+            maxHp: 10,
+            hp: 10,
+            cd: 0,
+            attackSpeed: 4,
+            location: 'RIGHT',
+            attack: 2,
+            ki: 20,
+            maxKi: 20
+          },
+          {id: 3, name: '村民', maxHp: 10, hp: 10, cd: 0, attackSpeed: 10, location: 'RIGHT', attack: 1, ki: 8, maxKi: 8}
         ]
       }
     },
@@ -94,6 +128,23 @@
         }
         return Math.floor(r[0].hp / r[0].maxHp * 100) + '%'
       },
+      refreshKi (id, location) {
+        let arr
+        if (location === 'LEFT') {
+          arr = this.left
+        } else {
+          arr = this.right
+        }
+        let r = arr.filter((r) => {
+          if (r.id === id) {
+            return r
+          }
+        })
+        if (r[0].ki <= 0) {
+          return 0
+        }
+        return Math.floor(r[0].ki / r[0].maxKi * 100) + '%'
+      },
       attack (r, target, e, t, alive, fn) {
         let h = t.getElementsByClassName('hurt')[0]
         // 攻击
@@ -102,7 +153,7 @@
         }, {
           duration: 100,
           complete: () => {
-            this.hurt = -r.attack
+            this.hurt = '-' + r.attack
             target.hp = target.hp - r.attack
             this.consoles.push(r.name + '对' + target.name + '使出了一招<span style="color: #388e8e;">【普通的一拳】</span>，造成了' + r.attack + '点伤害。')
           }
@@ -156,7 +207,7 @@
           let h = e.getElementsByClassName('hurt')[0]
           h.style.color = 'green'
           h.style.display = 'block'
-          this.hurt = 3
+          this.hurt = '+' + 3
           Velocity(h, {
             top: '-2rem', opacity: 0
           }, {
@@ -233,87 +284,5 @@
 </script>
 
 <style scoped>
-  .roles {
-    color: #ccc;
-    display: flex;
-  }
-
-  .left, .right {
-    flex: 1;
-    height: 20rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-bottom: solid 0.1rem #444;
-  }
-
-  .role {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 1rem;
-  }
-
-  .hp {
-    background: #cd0000;
-    height: 0.2rem;
-  }
-
-  .cd {
-    background: #eeb422;
-    height: 0.2rem;
-    width: 0;
-  }
-
-  .buttonDiv {
-    height: 4.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-
-  a {
-    width: 5rem;
-  }
-
-  .dead {
-    color: #666;
-  }
-
-  .hurt {
-    position: absolute;
-    color: red;
-    text-align: center;
-    width: 100%;
-    font-size: 0.8em;
-    font-weight: bold;
-    top: 0rem;
-    display: none;
-  }
-
-  .text {
-    padding: 0.2rem;
-    overflow-y: auto;
-    font-size: 0.8em;
-    color: #ccc;
-    position: absolute;
-    top: 24.5rem;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #222;
-  }
-
-  .result {
-    position: absolute;
-    top: -21rem;
-    /*top: 0rem;*/
-    left: 0;
-    right: 0;
-    height: 20rem;
-    border: solid 0.1rem #444;
-    background: #000;
-    color: #ccc;
-  }
+  @import "css/fight.css";
 </style>
